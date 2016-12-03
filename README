@@ -1,0 +1,10 @@
+this is a chat room demo
+
+multi user
+client server
+
+最好是能使用curse库来实现界面，可能会更好一点，结合 forwarding data中的 libevent使用
+
+            created by mzy on 2015-8-5
+
+
