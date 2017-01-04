@@ -23,6 +23,12 @@ public:
         /* client droped */
         OP_DROP,
     };
+    
+    struct destAddr {
+        std::string ip;
+        unsigned short port;
+    };
+
 
 public:
     OperContext(int opType): mRef(1), mSocket(-1), mType(opType),
@@ -37,6 +43,12 @@ public:
     }
 
 public:
+    void SetDest(std::string ip, unsigned short port)
+    {
+        mDest.ip = ip;
+        mDest.port = port;
+    }
+
     int GetType()
     {
         return mType;
@@ -108,6 +120,8 @@ public:
     int mType;
     /* conn id */
     uint64_t mConnID;
+    /* dest addr of this context if it's and network context*/ 
+    destAddr mDest;
 };
 
 class AcceptContext : public OperContext {

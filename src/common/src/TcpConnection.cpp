@@ -41,7 +41,8 @@ TcpConnection::ReadData(int fd)
         /* TODO change this to async */
         if (!mSocket->HasPreRecv()) {
             err = mSocket->PreRecv(dataLen);
-            if (0 != err or dataLen < sizeof(int)) {
+            /* sizeof retun unsigned, so compare dateLen with 0 first */
+            if ((0 != err) || (dataLen < 0 ) || (dataLen < sizeof(int))) {
                 Close();
                 break;
             }
@@ -72,6 +73,7 @@ TcpConnection::ReadData(int fd)
         OperContext *ctx = new OperContext(OperContext::OP_RECV);
         ctx->SetMessage(mCurrentRecvMsg);
         ctx->SetConnID(mConnID);
+        ctx->SetDest(GetClientIP(), GetClientPort());
         if (!mLogicService->Enqueue(ctx)) {
             err = EINVAL;
             ctx->SetMessage(NULL);

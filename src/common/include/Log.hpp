@@ -14,6 +14,13 @@
         std::cout <<ss.str()<<std::endl;\
 }\
 
+#define warn_log(data)\
+    {\
+        std::stringstream ss;\
+        ss<<data;\
+        std::cerr<<ss.str()<<std::endl;\
+}\
+
 #define error_log(data)\
     {\
         std::stringstream ss;\

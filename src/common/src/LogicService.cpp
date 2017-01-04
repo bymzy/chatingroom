@@ -109,11 +109,6 @@ LogicService::Process(OperContext *ctx)
         case OperContext::OP_START:
             ProcessStart(ctx);
             break;
-#if 0
-        case OperContext::OP_RECV:
-            RecvMsg(ctx);
-            break;
-#endif
         default:
             processed = false;
             break;

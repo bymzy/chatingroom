@@ -39,7 +39,21 @@ public:
     }
 
 public:
-    /* you may overwrite Start function if you don't want to new one thread */
+    int StartWithoutNewThread()
+    {
+        int err = 0;
+
+        if (mRunning) {
+            return 0;
+        }
+        mRunning = true;
+
+        Run();
+
+        return 0;
+    }
+
+    /* start with new thread */
     virtual int Start()
     {
         int err = 0;

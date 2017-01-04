@@ -304,7 +304,7 @@ NetService::Process(OperContext *ctx)
             AcceptConnection(ctx);
             break;
         case OperContext::OP_RECV:
-            RecvMsg(ctx);
+            mServer->Enqueue(ctx);
             break;
         case OperContext::OP_SEND:
             SendMsg(ctx);

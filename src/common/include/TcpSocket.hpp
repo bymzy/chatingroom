@@ -68,7 +68,7 @@ public:
         return err;
     }
 
-    int Listen(std::string ip, short port)
+    int Listen(std::string ip, unsigned short port)
     {
         int err = 0;
 
@@ -105,7 +105,7 @@ public:
         return err;
     }
 
-    int Connect(std::string ip, short port)
+    int Connect(std::string ip, unsigned short port)
     {
         int err = 0;
 
@@ -138,7 +138,7 @@ public:
         return err;
     }
 
-    int Accept(int& fd, std::string& ip, int& port)
+    int Accept(int& fd, std::string& ip, unsigned short& port)
     {
         int tempFd = -1;
         int err = 0;
@@ -175,7 +175,7 @@ public:
         return err;
     }
 
-    void SetAddr(std::string ip , int port)
+    void SetAddr(std::string ip , unsigned short port)
     {
         mIP = ip;
         mPort = port;
@@ -452,7 +452,7 @@ public:
 
 public:
     std::string mIP;
-    int mPort;
+    unsigned short mPort;
     bool mPreRecv;
     int mSocket;
     bool mClosed;

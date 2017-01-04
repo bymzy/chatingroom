@@ -58,7 +58,7 @@ public:
         return mSocket->mIP;
     }
 
-    int GetClientPort()
+    unsigned short GetClientPort()
     {
         return mSocket->mPort;
     }

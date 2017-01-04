@@ -36,7 +36,7 @@ public:
         int err = 0;
         int clientFd = -1;
         std::string ip;
-        int port = 0;
+        unsigned short port = 0;
 
         do {
             err = mListenSocket->Accept(clientFd, ip, port);

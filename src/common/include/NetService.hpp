@@ -62,10 +62,6 @@ public:
     void ProcessStart(OperContext *ctx);
 #endif
 
-    /* recv msg */
-    void RecvMsg(OperContext *ctx);
-    /* send msg */
-    void SendMsg(OperContext *ctx);
     /* add local listener */
     int AddListener(std::string ip , short port);
     /* start connect remote */
@@ -78,6 +74,12 @@ private:
     int StopListener();
     /* drop all conns */
     int DropAllConnections();
+
+    /* recv msg */
+    void RecvMsg(OperContext *ctx);
+
+    /* send msg */
+    void SendMsg(OperContext *ctx);
 #if 0
     /* add remote server */
     int AddRemote(std::string ip, short port);

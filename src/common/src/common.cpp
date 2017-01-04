@@ -13,14 +13,14 @@
 
 bool InvalidIP(const std::string& ip)
 {
-    int ret = 0;
+    in_addr_t ret = INADDR_NONE;
     ret = inet_addr(ip.c_str());
     return INADDR_NONE == ret ? true : false;
 }
 
 bool InvalidPort(const std::string& port)
 {
-    int i = 0;
+    unsigned i = 0;
     for ( ;i<port.length(); ++i ) {
         if ( !isdigit(port[i]) ) {
             return true;
@@ -73,7 +73,7 @@ std::string GetPeerIP(struct sockaddr_in *paddr)
     return std::string(inet_ntoa(paddr->sin_addr));
 }
 
-int GetPeerPort(struct sockaddr_in *paddr)
+unsigned short GetPeerPort(struct sockaddr_in *paddr)
 {
     return ntohs(paddr->sin_port);
 }
