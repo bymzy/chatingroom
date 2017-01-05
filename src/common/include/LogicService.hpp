@@ -50,7 +50,7 @@ public:
 
         Run();
 
-        return 0;
+        return err;
     }
 
     /* start with new thread */

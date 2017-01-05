@@ -52,11 +52,17 @@ public:
 public:
     Msg& operator << (const int& r);
     Msg& operator << (const std::string& r);
-    Msg& WriteByte(const char *r, int len);
+    Msg& WriteByte(const char *r, uint64_t len);
+    Msg& operator << (const uint16_t& r);
+    Msg& operator << (const uint32_t& r);
+    Msg& operator << (const uint64_t& r);
 
     Msg& operator >> (int& r);
     Msg& operator >> (std::string& r);
-    Msg& ReadByte(char *r, int len);
+    Msg& ReadByte(char *r, uint64_t len);
+    Msg& operator >> (uint16_t& r);
+    Msg& operator >> (uint32_t& r);
+    Msg& operator >> (uint64_t& r);
 
     /* reset current read offset */
     inline void ResetReadOffset()

@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include "client/Layout.hpp"
 #include "client/Client.hpp"
 #include "server/Server.hpp"
 
@@ -20,14 +19,13 @@ int RunAsClient()
     int err = 0;
 
     CRClient client("127.0.0.1", 2141, "test");
-    Layout lay(&client);
-
     err = client.Start();
     if (0 != err) {
         goto OUT;
     }
 
-    err = lay.Start();
+    //client.StartWindow();
+    sleep(100);
 
 OUT:
     return err;

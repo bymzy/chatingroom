@@ -25,4 +25,10 @@ int CRServer::Start()
     return err;
 }
 
+void 
+CRServer::SendMessage(OperContext *ctx)
+{
+    mNetService.Enqueue(ctx);
+}
+
 

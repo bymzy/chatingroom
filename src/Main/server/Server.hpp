@@ -14,7 +14,7 @@
 class CRServer {
 public:
     CRServer(std::string ip, short port):mIP(ip), mPort(port),
-        mWorker("Server worker"), mNetService(&mWorker, "Server NetService")
+        mWorker(&mNetService, "Server worker"), mNetService(&mWorker, "Server NetService")
     {
     }
     ~CRServer()
@@ -25,6 +25,7 @@ public:
 
 public:
     int Start();
+    void SendMessage(OperContext *ctx);
 
 private:
     std::string mIP;

@@ -1,4 +1,4 @@
 
-include_directories(../../common ../struct/)
+#include_directories(../../common ../struct/)
 
 

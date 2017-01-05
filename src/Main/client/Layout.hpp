@@ -4,7 +4,8 @@
 #define __LAYOUT_HPP__
 
 #include <cdk.h>
-#include "Client.hpp"
+
+class CRClient;
 
 class Layout {
 public:
