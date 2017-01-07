@@ -8,7 +8,7 @@ bool
 Worker::Process(OperContext*ctx)
 {
     bool processed = true;
-    debug_log("Worker::Process! ctx type: " << ctx->GetType());
+    trace_log("Worker::Process! ctx type: " << ctx->GetType());
 
     switch (ctx->GetType())
     {
@@ -17,6 +17,9 @@ Worker::Process(OperContext*ctx)
             break;
         case OperContext::OP_SEND:
             mNet->Enqueue(ctx);
+            break;
+        case OperContext::OP_DROP:
+            HandleDrop(ctx);
             break;
         default:
             processed = false;
@@ -74,52 +77,18 @@ Worker::HandleLogon(Msg *msg, std::string ip, unsigned short port,
     std::string errstr;
     User *user = NULL;
 
-    do {
-        iter_id_user iter = mIdUser.find(connId);
-        if (iter != mIdUser.end()) {
-            warn_log("user " << name << " already logoned!");
-            err = Err::user_name_alredy_exist;
-            errstr = "user with same name already logoned!";
-            break;
-        }
-
-        user = new User(name, ip, port, connId);
-        user->SetRoomId(0);
-        mIdUser.insert(std::make_pair(connId, user));
-        debug_log("HandleUseLogon, user: " << name
-                << ", ip: " << ip
-                << ", port: " << port
-                << ", connid: " << connId);
-    } while(0);
+    err = mRoomKeeper.HandleLogon(name, ip, port, connId, errstr);
 
     (*reply) << MsgType::c2s_logon_res;
     (*reply) << err;
     (*reply) << "success";
 
     if (0 == err) {
-        GetUserList(connId, user->mRoomId, reply); 
+        mRoomKeeper.GetRoomUserListMsg(HALL_ID, reply); 
     }
 
     reply->SetLen();
     SendMessage(connId, reply);
-    return;
-}
-
-void
-Worker::GetUserList(uint64_t connId, uint32_t roomId, Msg *msg)
-{
-    iter_id_user iter = mIdUser.begin();
-    User *user = NULL;
-    uint32_t count = mIdUser.size();
-
-    (*msg) << count;
-    debug_log("GetUserList count: " << mIdUser.size());
-    for(; iter != mIdUser.end(); ++iter) {
-        user = iter->second;
-        user->Encode(msg);
-        debug_log("user info " << user->DebugString());
-    }
-
     return;
 }
 
@@ -131,8 +100,15 @@ Worker::SendMessage(uint64_t connId, Msg *msg)
     ctx->SetConnID(connId);
     Enqueue(ctx);
     OperContext::DecRef(ctx);
-
     return;
+}
+
+void
+Worker::HandleDrop(OperContext *ctx)
+{
+    /* user dropped */
+    uint64_t userId= ctx->mConnID;
+    mRoomKeeper.HandleDrop(userId);
 }
 
 

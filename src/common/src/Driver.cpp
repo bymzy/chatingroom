@@ -69,7 +69,6 @@ Driver::UnRegistReadEvent(int fd, RWConnection *conn)
     std::map<int, EventInfo*>::iterator iter;
     EventInfo *info = NULL;
 
-    trace_log("remove read event for socket: " << fd);
 
     do {
         iter = mEventsInfo.find(fd);
@@ -96,7 +95,6 @@ Driver::RegistWriteEvent(int fd, RWConnection *conn)
     std::map<int, EventInfo*>::iterator iter;
     EventInfo *info = NULL;
 
-    trace_log("remove write event for socket: " << fd);
 
     do {
         iter = mEventsInfo.find(fd);
@@ -173,8 +171,6 @@ Driver::Run() {
         assert(mEventBase != NULL);
         err = Init();
         if (0 != err) {
-            error_log("Driver " << mName
-                    << "start failed, error: " << err);
             assert(err == 0);
             break;
         }
@@ -184,7 +180,6 @@ Driver::Run() {
         mRunning = true;
         err = event_base_loop(mEventBase, 0);
         if (0 != err) {
-            error_log("driver event_base_loop failed, error: " << err);
             assert(err == 0);
             break;
         }

@@ -5,7 +5,7 @@
 
 #include <string.h>
 #include "include/NetService.hpp"
-#include "Struct.hpp"
+#include "User.hpp"
 #include "Layout.hpp"
 
 class CRClient : public LogicService {

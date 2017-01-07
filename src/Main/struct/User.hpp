@@ -1,22 +1,24 @@
 
 
-#ifndef __STRUCT_HPP__
-#define __STRUCT_HPP__
+#ifndef __STRUCT_USER_HPP__
+#define __STRUCT_USER_HPP__
 
 #include <map>
 #include <sstream>
 #include "include/Msg.hpp"
 
 #define HALL_ID 0
+#define HALL_NAME "HALL"
+#define INVALID_ROOM_ID (uint32_t(-1))
 
 class User {
 public:
-    User():mPort(0), mID(0), mRoomId(0)
+    User():mPort(0), mID(0), mRoomId(INVALID_ROOM_ID)
     {
     }
-
     User(std::string name, std::string ip, short port, uint64_t connId):
-        mName(name), mIP(ip), mPort(port), mID(connId)
+        mName(name), mIP(ip), mPort(port),
+        mID(connId), mRoomId(INVALID_ROOM_ID)
     {
     }
 
@@ -56,6 +58,16 @@ public:
     void SetRoomId(uint32_t roomId)
     {
         mRoomId = roomId;
+    }
+
+    uint32_t GetRoomId() 
+    {
+        return mRoomId;
+    }
+
+    std::string GetName()
+    {
+        return mName;
     }
 
 public:

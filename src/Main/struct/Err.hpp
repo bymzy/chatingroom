@@ -6,7 +6,12 @@
 class Err {
 public:
     enum _err{
-        user_name_alredy_exist = 1 ,   
+        user_name_alredy_logoned = 1 ,   
+        user_same_name_exist,
+        room_not_exist,
+        room_passwd_not_match,
+        user_already_in_this_room,
+        room_with_same_name_already_exists,
     };
 };
 

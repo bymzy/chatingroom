@@ -18,7 +18,6 @@ public:
         mThread = new Thread(name, false);
         mEventBase = event_base_new();
         assert(NULL != mEventBase);
-        debug_log("Driver is not null!");
     }
     virtual ~Driver()
     {

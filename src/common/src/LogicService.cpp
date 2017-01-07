@@ -14,12 +14,9 @@ LogicService::Run()
 
     err = Init();
     if (0 != err) {
-        error_log("LogicService init failed, name: " << mName
-                << ", error: " << err);
         return;
     }
 
-    debug_log("logic service running!");
     while (mRunning)
     {
         pthread_mutex_lock(&mMutex);
@@ -38,7 +35,6 @@ LogicService::Run()
         }
 #endif
 
-        trace_log("logicservice queue size: " << mQueue.size());
         ctxVec.assign(mQueue.begin(), mQueue.end());
         mQueue.clear();
 
@@ -100,7 +96,6 @@ bool
 LogicService::Process(OperContext *ctx)
 {
     bool processed = true;
-    trace_log("LogicService process context: " << ctx->GetType());
     switch (ctx->GetType())
     {
         case OperContext::OP_STOP:

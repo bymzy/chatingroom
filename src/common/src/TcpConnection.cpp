@@ -33,7 +33,6 @@ TcpConnection::ReadData(int fd)
 
     do {
         if (mSocket->NoOK()) {
-            trace_log("event for write but socket no okay");
             err = EINVAL;
             break;
         }
@@ -59,7 +58,6 @@ TcpConnection::ReadData(int fd)
         err = mSocket->Recv(mCurrentRecvMsg->GetBuffer() + mRecved,
                 mToRecv - mRecved, recved);
         if (0 != err) {
-            error_log("TcpConnection read data failed, error: " << err);
             Close();
             break;
         }
@@ -108,14 +106,12 @@ TcpConnection::WriteData(int fd)
     pthread_mutex_lock(&mMutex);
     do {
         if (mClosed || mSocket->NoOK()) {
-            trace_log("event for write but socket no okay");
             err = EINVAL;
             break;
         }
 
         if (NULL == mCurrentSendMsg
                 && !InitNextSend()) {
-            trace_log("current no message to send, conn id: " << mConnID);
             break;
         }
 
@@ -124,9 +120,6 @@ TcpConnection::WriteData(int fd)
         err = mSocket->Send(mCurrentSendMsg->GetBuffer() + mSent, 
                 mToSend, sent);
         if (0 != err) {
-            error_log("TcpConnection::WriteData failed, error: " << err
-                    << ", conn id: " << mConnID
-                    << ", error: " << strerror(err));
             ResetSend();
             Close();
 
@@ -142,7 +135,6 @@ TcpConnection::WriteData(int fd)
         mToSend -= sent;
         if (mToSend == 0) {
             /* you see all msg is delete on network driver */
-            trace_log("message send complete, conn id: " << mConnID);
             mToSendMsg.pop_front();
             delete mCurrentSendMsg;
             ResetSend();

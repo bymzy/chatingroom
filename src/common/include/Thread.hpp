@@ -44,7 +44,6 @@ public:
         int err = 0;
         err = pthread_cancel(mThread);
         if (0 != err) {
-            error_log("pthread cancel failed, error: " << err);
         }
         assert(err == 0);
         return 0;
