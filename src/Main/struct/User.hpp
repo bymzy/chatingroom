@@ -33,7 +33,6 @@ public:
         ss << mName <<", " << mIP << ", "
            << mPort <<", " << mID << ", "
            << mRoomId;
-
         return ss.str();
     }
 
@@ -68,6 +67,21 @@ public:
     std::string GetName()
     {
         return mName;
+    }
+
+    std::string GetIp()
+    {
+        return mIP;
+    }
+
+    uint64_t GetId()
+    {
+        return mID;
+    }
+
+    unsigned short GetPort()
+    {
+        return mPort;
     }
 
 public:

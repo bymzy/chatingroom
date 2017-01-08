@@ -1,7 +1,8 @@
 
 
 #include <iostream>
-
+#include <time.h>
+#include "include/common.h"
 #include "client/Client.hpp"
 #include "server/Server.hpp"
 
@@ -17,15 +18,15 @@ int RunAsServer()
 int RunAsClient()
 {
     int err = 0;
+    time_t now = time(NULL);
 
-    CRClient client("127.0.0.1", 2141, "test");
+    CRClient client("127.0.0.1", 2141, i2s(now));
     err = client.Start();
     if (0 != err) {
         goto OUT;
     }
 
-    //client.StartWindow();
-    sleep(100);
+    client.StartWindow();
 
 OUT:
     return err;

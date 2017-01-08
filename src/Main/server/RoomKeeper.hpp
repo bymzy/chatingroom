@@ -28,6 +28,7 @@ public:
             const unsigned short& port,
             const uint64_t& userId, std::string& errstr);
 
+    /* try to add user to room */
     int Join(const std::string& roomName, const uint64_t& userId,
             const std::string& passwd, std::string errstr);
     

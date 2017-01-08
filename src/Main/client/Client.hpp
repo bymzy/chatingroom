@@ -7,13 +7,15 @@
 #include "include/NetService.hpp"
 #include "User.hpp"
 #include "Layout.hpp"
+#include "Room.hpp"
 
 class CRClient : public LogicService {
 public:
     CRClient(std::string ip, short port, std::string user):
         LogicService("CRClient"),
         mIP(ip), mPort(port), mUser(user),
-        mNetService(this, ""), mLayout(this)
+        mNetService(this, ""), mLayout(this),
+        mCurrentRoom(INVALID_ROOM_ID, "", "")
     {
     }
 
@@ -35,7 +37,7 @@ private:
 private:
     void RecvMessage(OperContext *ctx);
     void HandleLogonRes(Msg *msg);
-    void ParseUserList(Msg *msg);
+    void ParseRoomAndUserList(Msg *msg);
     void UpdateWindowUserList();
     void LogonFailed();
 
@@ -46,6 +48,7 @@ private:
     NetService mNetService; 
     Layout mLayout;
     map_id_user mOnlines;
+    Room mCurrentRoom;
 };
 
 

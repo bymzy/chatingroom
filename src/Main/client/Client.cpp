@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include "include/Log.hpp"
 #include "MsgType.hpp"
+#include "include/common.h"
 
 int CRClient::Init()
 {
@@ -99,7 +100,7 @@ CRClient::HandleLogonRes(Msg *msg)
     debug_log("handle logon " << err
             << ", errstr: " << errstr);
     if (0 == err) {
-        ParseUserList(msg);
+        ParseRoomAndUserList(msg);
         UpdateWindowUserList();
     } else {
         error_log("logon failed, errno: " << err
@@ -111,7 +112,7 @@ CRClient::HandleLogonRes(Msg *msg)
 }
 
 void 
-CRClient::ParseUserList(Msg *msg)
+CRClient::ParseRoomAndUserList(Msg *msg)
 {
     uint32_t count = 0;
     iter_id_user iter = mOnlines.begin();
@@ -120,6 +121,9 @@ CRClient::ParseUserList(Msg *msg)
         delete iter->second;
     }
     mOnlines.clear();
+
+    mCurrentRoom.Decode(msg);
+    trace_log("room info: " << mCurrentRoom.DebugString());
 
     (*msg) >> count;
     debug_log("parse user list count: " << count);
@@ -134,6 +138,23 @@ CRClient::ParseUserList(Msg *msg)
 void
 CRClient::UpdateWindowUserList()
 {
+    std::vector<std::string> vec;
+    std::string title = "<L></B/U/31>NAME  ID   IP   PORT<!31>";
+    vec.push_back(title);
+
+    iter_id_user index = mOnlines.begin();
+    for (;index != mOnlines.end(); ++index) {
+        User *user = index->second;
+        std::string temp;
+        temp += "<L></B/31>";
+        temp += user->GetName() + "  ";
+        temp += i2s(user->GetId()) + "  ";
+        temp += user->GetIp() + "  ";
+        temp += i2s(user->GetPort()) + "  ";
+        vec.push_back(temp);
+    }
+
+    mLayout.UpdateUserListWithStringVec(vec);
 }
 
 void

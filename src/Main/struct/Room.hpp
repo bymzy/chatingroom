@@ -6,7 +6,9 @@
 #include <set>
 #include <map>
 #include <stdint.h>
+#include <sstream>
 #include "User.hpp"
+#include "include/Msg.hpp"
 
 class Room {
 public:
@@ -33,6 +35,43 @@ public:
     void SetId(uint32_t id) 
     {
         mID = id;
+    }
+
+    void Encode(Msg *msg)
+    {
+        uint32_t count = mUsers.size();
+        std::set<uint64_t>::iterator iter = mUsers.begin();
+        
+        (*msg) << mID;
+        (*msg) << mName;
+        (*msg) << count;
+
+        for (;iter != mUsers.end(); ++iter) {
+            (*msg) << *iter;
+        }
+    }
+
+    void Decode(Msg *msg)
+    {
+        uint32_t count = 0;
+        uint64_t userId = 0;
+
+        (*msg) >> mID;
+        (*msg) >> mName;
+        (*msg) >> count;
+
+        for (uint32_t i = 0; i < count; ++i) {
+            (*msg) >> userId;
+            mUsers.insert(userId);
+        }
+    }
+
+    std::string DebugString()
+    {
+        std::stringstream ss;
+        ss << " room name: " << mName
+            << " room id: " << mID;
+        return ss.str();
     }
 
 private:

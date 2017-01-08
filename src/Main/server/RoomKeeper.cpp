@@ -114,16 +114,20 @@ RoomKeeper::GetRoomUserListMsg(uint32_t roomId, Msg *msg)
     User *user = NULL;
     iter_id_user id_user_iter;
 
+
     /* get all user of this room*/
     iter_id_room iter = mIdRoom.find(roomId);
     assert(iter != mIdRoom.end());
     Room *room = iter->second; 
     users = room->GetAllUsers();
 
+    /* encode room info */
+    room->Encode(msg);
+
+    /* encode msg with user info */
     count = users.size();
     (*msg) << count;
 
-    /* encode msg with user info */
     iter_users = users.begin();
     for (;iter_users != users.end(); ++iter_users) {
         id_user_iter = mIdUser.find(*iter_users);

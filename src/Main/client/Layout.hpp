@@ -4,6 +4,8 @@
 #define __LAYOUT_HPP__
 
 #include <cdk.h>
+#include <vector>
+#include <string>
 
 class CRClient;
 
@@ -16,6 +18,8 @@ public:
 
 public:
     int Start();
+
+    void UpdateUserListWithStringVec(const std::vector<std::string>& vec);
 
 public:
     CDKSCREEN *mScreen;

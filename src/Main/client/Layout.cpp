@@ -1,6 +1,7 @@
 
 #include <cdk.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "Layout.hpp"
 
 static int entryCB(EObjectType cdktype GCC_UNUSED,
@@ -78,9 +79,10 @@ Layout::Start()
 
         if (mInput->exitType == vNORMAL) {
             sprintf(temp, "input: %s", input);
-            addCDKSwindow(mDisplay, input, BOTTOM);
+            addCDKSwindow(mDisplay, temp, BOTTOM);
         } else {
             sprintf(temp, "error exit: %s", input);
+            addCDKSwindow(mDisplay, temp, BOTTOM);
             exit = true;
         }
         setCDKEntryValue(mInput, "");
@@ -90,8 +92,20 @@ Layout::Start()
     destroyCDKSwindow(mDisplay);
     destroyCDKSwindow(mList);
     destroyCDKScreen(mScreen);
-
     endCDK();
+}
+
+void
+Layout::UpdateUserListWithStringVec(const std::vector<std::string>& vec)
+{
+    uint32_t i = 0;
+    char temp[255];
+
+    for (;i < vec.size(); ++i) {
+        memset(temp, 255, 0);
+        sprintf(temp, "%s", vec[i].c_str());
+        addCDKSwindow(mList, temp, BOTTOM);
+    }
 }
 
 
