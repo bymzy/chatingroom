@@ -28,7 +28,7 @@ int CRClient::Init()
             OperContext *replyctx = new OperContext(OperContext::OP_SEND);              
             Msg *repmsg = new Msg();                                                    
             (*repmsg) << MsgType::c2s_logon;
-            (*repmsg) << mUser; 
+            (*repmsg) << mUserName; 
             repmsg->SetLen();                                                           
             replyctx->SetMessage(repmsg);                                               
             replyctx->SetConnID(connId);                                                
@@ -58,6 +58,8 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_room_info:
             ParseRoomInfo(msg);
             UpdateWindowUserList();
+        case MsgType::s2c_room_chat_msg:
+            ReceiveChatMessage(msg);
             break;
     }
 
@@ -104,14 +106,19 @@ CRClient::HandleLogonRes(Msg *msg)
     (*msg) >> err;
     (*msg) >> errstr;
 
-    debug_log("handle logon " << err
-            << ", errstr: " << errstr);
+    if (0 == err) {
+        mUser.Decode(msg);
+    }
+
+    debug_log("handle logon " << err << ", errstr: " << errstr);
     if (0 != err) {
         error_log("logon failed, errno: " << err
                 << ", errstr: " << errstr);
         /* TODO exit normally */
         exit(err);
         LogonFailed();
+    } else {
+        debug_log("current user info: " << mUser.DebugString());
     }
 }
 
@@ -164,12 +171,46 @@ CRClient::UpdateWindowUserList()
 void
 CRClient::LogonFailed()
 {
+    /* TODO */
 }
 
 void
 CRClient::HandleDrop(OperContext *ctx)
 {
+    /* TODO */
 }
+
+void
+CRClient::HandleInput(std::string input)
+{
+    OperContext *ctx = new OperContext(OperContext::OP_SEND);
+    Msg *msg = new Msg;
+    (*msg) << MsgType::c2s_publish_chat_msg;
+    (*msg) << mCurrentRoom.GetId();
+    (*msg) << input;
+    msg->SetLen();
+
+    debug_log("client handle input " << input);
+    ctx->SetMessage(msg);
+    ctx->SetConnID(mUser.GetId());
+    mNetService.Enqueue(ctx);
+    OperContext::DecRef(ctx);
+}
+
+void
+CRClient::ReceiveChatMessage(Msg *msg)
+{
+    std::string fromName;
+    std::string words;
+    bool isSelf = (fromName == mUserName)? true : false;
+    (*msg) >> fromName;
+    (*msg) >> words;
+
+    mLayout.ReceiveMessage(fromName, words, isSelf);
+}
+
+
+
 
 
 

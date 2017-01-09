@@ -10,7 +10,7 @@
 int
 RoomKeeper::HandleLogon(const std::string& name, const std::string& ip,
         const unsigned short& port, 
-        const uint64_t& userId, std::string& errstr)
+        const uint64_t& userId, std::string& errstr, User** retuser)
 {
     int err = 0;
     iter_id_user iter;
@@ -38,6 +38,8 @@ RoomKeeper::HandleLogon(const std::string& name, const std::string& ip,
         user = new User(name, ip, port, userId);
         mIdUser.insert(std::make_pair(userId, user));
         mUserNames.insert(std::make_pair(name, userId));
+
+        *retuser = user;
 
         /* join hall */
         err = Join(HALL_NAME, userId, "", errstr);
@@ -209,6 +211,8 @@ RoomKeeper::HandleDrop(uint64_t userId)
         delete user;
         user = NULL;
 
+        /* info user left */
+        PublishRoomInfo(room);
     } while(0);
 
     return;
@@ -241,6 +245,54 @@ RoomKeeper::SendMessage(uint64_t connId, Msg *msg)
     mWorker->Enqueue(ctx);
     OperContext::DecRef(ctx);
 }
+
+void
+RoomKeeper::PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::string& input)
+{
+    User * user = GetUserById(userId);
+    Room * room = GetRoomById(roomId);
+    User * temp = NULL;
+    std::set<uint64_t> users;
+    std::set<uint64_t>::iterator user_index;
+
+    Msg msg;
+    msg << MsgType::s2c_room_chat_msg;
+    msg << user->GetName();
+    msg << input;
+    msg.SetLen();
+
+    debug_log("receive room chat message: " << user->GetName() << " " << input);
+
+    users = room->GetAllUsers();
+    user_index = users.begin();
+
+    for (;user_index != users.end(); ++user_index) {
+        temp = GetUserById(*user_index);
+        SendMessage(temp->GetId(), msg.Dup()); 
+    }
+}
+
+User *
+RoomKeeper::GetUserById(uint64_t userId)
+{
+    iter_id_user index;
+    index = mIdUser.find(userId);
+    assert(index != mIdUser.end());
+    
+    return index->second;
+}
+
+Room *
+RoomKeeper::GetRoomById(uint32_t roomId)
+{
+    iter_id_room index;
+    index = mIdRoom.find(roomId);
+    assert(index != mIdRoom.end());
+
+    return index->second;
+}
+
+
 
 
 

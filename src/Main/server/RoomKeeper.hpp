@@ -26,7 +26,7 @@ public:
 public:
     int HandleLogon(const std::string& name, const std::string& ip, 
             const unsigned short& port,
-            const uint64_t& userId, std::string& errstr);
+            const uint64_t& userId, std::string& errstr, User **user);
 
     /* try to add user to room */
     int Join(const std::string& roomName, const uint64_t& userId,
@@ -42,6 +42,12 @@ public:
     void PublishRoomInfo(Room *room);
 
     void SendMessage(uint64_t connId, Msg *msg);
+
+    void PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::string& msg);
+
+    User * GetUserById(uint64_t userId);
+
+    Room * GetRoomById(uint32_t roomId);
 
 private:
     void SetUserRoomId(uint64_t userId, uint32_t roomId);

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "Layout.hpp"
+#include "Client.hpp"
 
 static int entryCB(EObjectType cdktype GCC_UNUSED,
         void *object GCC_UNUSED,
@@ -78,8 +79,9 @@ Layout::Start()
          * */
 
         if (mInput->exitType == vNORMAL) {
-            sprintf(temp, "input: %s", input);
-            addCDKSwindow(mDisplay, temp, BOTTOM);
+            sprintf(temp, "%s", input);
+            //addCDKSwindow(mDisplay, temp, BOTTOM);
+            mClient->HandleInput(std::string(input));
         } else {
             sprintf(temp, "error exit: %s", input);
             addCDKSwindow(mDisplay, temp, BOTTOM);
@@ -101,11 +103,27 @@ Layout::UpdateUserListWithStringVec(const std::vector<std::string>& vec)
     uint32_t i = 0;
     char temp[255];
 
+    cleanCDKSwindow(mList);
     for (;i < vec.size(); ++i) {
         memset(temp, 255, 0);
         sprintf(temp, "%s", vec[i].c_str());
         addCDKSwindow(mList, temp, BOTTOM);
     }
+}
+
+void
+Layout::ReceiveMessage(const std::string& from, const std::string& words, bool isSelf)
+{
+    std::string output;
+    char temp[256];
+    memset(temp, 0, 256);
+    if (isSelf) {
+        output = "<R></B/05>" + words + " " + from;
+    } else {
+        output = "<R></05>" + from + " "  + words;
+    }
+    sprintf(temp, "%s", output.c_str());
+    addCDKSwindow(mDisplay, temp, BOTTOM);
 }
 
 

@@ -29,8 +29,6 @@ Room::Add(uint64_t userId)
     }
 
     mUsers.insert(userId);
-
-    /* TODO need to update user list of this room */
     return;
 }
 
@@ -42,8 +40,6 @@ Room::HandleUserLeave(uint64_t userId)
     }
 
     mUsers.erase(userId);
-
-    /* TODO need to update user list of this room */
 }
 
 

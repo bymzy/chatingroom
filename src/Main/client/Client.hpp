@@ -13,7 +13,7 @@ class CRClient : public LogicService {
 public:
     CRClient(std::string ip, short port, std::string user):
         LogicService("CRClient"),
-        mIP(ip), mPort(port), mUser(user),
+        mIP(ip), mPort(port), mUserName(user),
         mNetService(this, ""), mLayout(this),
         mCurrentRoom(INVALID_ROOM_ID, "", "")
     {
@@ -29,6 +29,9 @@ public:
         mLayout.Start();
     }
 
+    /* handle client input */
+    void HandleInput(std::string input);
+
 private:
     virtual int Init();
     virtual int Finit();
@@ -41,11 +44,17 @@ private:
     void UpdateWindowUserList();
     void LogonFailed();
     void HandleDrop(OperContext *ctx);
+    void ReceiveChatMessage(Msg *msg);
+    
 
 private:
+    /* server ip and port*/
     std::string mIP;
     short mPort;
-    std::string mUser;
+
+    /* user name */
+    std::string mUserName;
+    User mUser;
     NetService mNetService; 
     Layout mLayout;
     map_id_user mOnlines;

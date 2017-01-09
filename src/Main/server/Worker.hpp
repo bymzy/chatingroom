@@ -27,6 +27,7 @@ private:
     void HandleLogon(Msg*msg, std::string ip, unsigned short port, uint64_t connId);
     void SendMessage(uint64_t connId, Msg *msg);
     void HandleDrop(OperContext *ctx);
+    void PublishChatMessage(Msg *msg, uint64_t userId);
 
 public:
     LogicService *mNet;

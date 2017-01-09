@@ -58,6 +58,11 @@ Worker::RecvMessage(OperContext *ctx)
         case MsgType::c2s_logon:
             HandleLogon(msg, ip, port, connId);
             break;
+        case MsgType::c2s_publish_chat_msg:
+            PublishChatMessage(msg, connId);
+            break;
+        default:
+            break;
     }
 
     delete msg;
@@ -71,16 +76,22 @@ Worker::HandleLogon(Msg *msg, std::string ip, unsigned short port,
         uint64_t connId)
 {
     std::string name;
+    User *user = NULL;
     (*msg) >> name;
     Msg *reply = new Msg;
     int err = 0;
     std::string errstr;
 
-    err = mRoomKeeper.HandleLogon(name, ip, port, connId, errstr);
+    err = mRoomKeeper.HandleLogon(name, ip, port, connId, errstr, &user);
 
     (*reply) << MsgType::s2c_logon_res;
     (*reply) << err;
-    (*reply) << "success";
+    (*reply) << errstr;
+
+    if (0 == err) {
+        /* send back user info if success */
+        user->Encode(reply);
+    }
 
     reply->SetLen();
     SendMessage(connId, reply);
@@ -106,6 +117,16 @@ Worker::HandleDrop(OperContext *ctx)
     mRoomKeeper.HandleDrop(userId);
 }
 
+void
+Worker::PublishChatMessage(Msg *msg, uint64_t userId)
+{
+    uint32_t roomId = 0;
+    std::string input;
+    (*msg) >> roomId;
+    (*msg) >> input;
+
+    mRoomKeeper.PublishRoomMessage(roomId, userId, input);
+}
 
 
 
