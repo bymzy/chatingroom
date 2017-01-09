@@ -3,7 +3,9 @@
 #include "include/Msg.hpp"
 #include "include/common.h"
 #include <stdint.h>
+#include "include/Log.hpp"
 
+ThreadLogger *g_logger = NULL;
 int main()
 {
     unsigned short a = 12;
@@ -27,5 +29,9 @@ int main()
     std::cout << a <<" " << b << " " << c <<  " " << d  << " " << e <<std::endl;
     std:: cout << temp << " " << temp2 << std::endl; 
     delete t;
+
+    debug_log("HHAHAH");
+
+
 }
 

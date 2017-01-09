@@ -5,6 +5,9 @@
 #include "include/common.h"
 #include "client/Client.hpp"
 #include "server/Server.hpp"
+#include "include/Log.hpp"
+
+ThreadLogger *g_logger = NULL;
 
 int RunAsServer()
 {

@@ -7,8 +7,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <errno.h>
-
-#include "Log.hpp"
+#include <string>
 
 class Thread {
 public:
