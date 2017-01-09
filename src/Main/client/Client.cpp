@@ -8,7 +8,6 @@
 int CRClient::Init()
 {
     int err = 0;
-    uint64_t connId;
 
     do {
         err = mNetService.Start();
@@ -17,25 +16,12 @@ int CRClient::Init()
             break;
         }
 
-        err = mNetService.StartConnectRemote(mIP, mPort, connId);
+        err = mNetService.StartConnectRemote(mIP, mPort, mConnId);
         if (0 != err) {
             error_log("client connect remote failed! ip: " << mIP 
                     << ", port: " << mPort);
             break;
         }
-
-        {
-            OperContext *replyctx = new OperContext(OperContext::OP_SEND);              
-            Msg *repmsg = new Msg();                                                    
-            (*repmsg) << MsgType::c2s_logon;
-            (*repmsg) << mUserName; 
-            repmsg->SetLen();                                                           
-            replyctx->SetMessage(repmsg);                                               
-            replyctx->SetConnID(connId);                                                
-            mNetService.Enqueue(replyctx);                                              
-            OperContext::DecRef(replyctx);
-        }
-
     } while(0);
 
     return err;
@@ -58,6 +44,7 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_room_info:
             ParseRoomInfo(msg);
             UpdateWindowUserList();
+            break;
         case MsgType::s2c_room_chat_msg:
             ReceiveChatMessage(msg);
             break;
@@ -190,9 +177,8 @@ CRClient::HandleInput(std::string input)
     (*msg) << input;
     msg->SetLen();
 
-    debug_log("client handle input " << input);
     ctx->SetMessage(msg);
-    ctx->SetConnID(mUser.GetId());
+    ctx->SetConnID(mConnId);
     mNetService.Enqueue(ctx);
     OperContext::DecRef(ctx);
 }
@@ -202,13 +188,26 @@ CRClient::ReceiveChatMessage(Msg *msg)
 {
     std::string fromName;
     std::string words;
-    bool isSelf = (fromName == mUserName)? true : false;
     (*msg) >> fromName;
     (*msg) >> words;
 
+    bool isSelf = (fromName == mUserName)? true : false;
     mLayout.ReceiveMessage(fromName, words, isSelf);
 }
 
+void
+CRClient::SendLogon()
+{
+    OperContext *replyctx = new OperContext(OperContext::OP_SEND);              
+    Msg *repmsg = new Msg();                                                    
+    (*repmsg) << MsgType::c2s_logon;
+    (*repmsg) << mUserName; 
+    repmsg->SetLen();                                                           
+    replyctx->SetMessage(repmsg);                                               
+    replyctx->SetConnID(mConnId);                                                
+    mNetService.Enqueue(replyctx);                                              
+    OperContext::DecRef(replyctx);
+}
 
 
 

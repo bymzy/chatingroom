@@ -24,6 +24,7 @@ Layout::Start()
     char temp[256];
     char *input = NULL;
     bool exit = false;
+    bool logon = true;
 
     mWindow = initscr();
     mScreen = initCDKScreen(mWindow);
@@ -71,9 +72,17 @@ Layout::Start()
     bindCDKObject(vENTRY, mInput, KEY_TAB, entryCB, mInput);
     
     while(!exit) {
+        if (logon) {
+            mClient->SendLogon();
+            logon = false;
+        }
+
         memset(temp, 0, 256);
         input = activateCDKEntry(mInput, 0);
 
+        if (input == NULL) {
+            continue;
+        }
         /* 这里我们最好能够截取到tab键 然后根据场景来自动补全 
          * 参考buttonbox_ex 中的写法
          * */
@@ -118,13 +127,19 @@ Layout::ReceiveMessage(const std::string& from, const std::string& words, bool i
     char temp[256];
     memset(temp, 0, 256);
     if (isSelf) {
-        output = "<R></B/05>" + words + " " + from;
+        output = "<R></B/05>" + words + " :" + from;
     } else {
-        output = "<R></05>" + from + " "  + words;
+        output = "<L></05>" + from + ": "  + words;
     }
     sprintf(temp, "%s", output.c_str());
     addCDKSwindow(mDisplay, temp, BOTTOM);
 }
 
+void
+Layout::DisplaySystemMessage(std::string info)
+{
+    info = "system info: " + info;
+    addCDKSwindow(mDisplay, info.c_str(), BOTTOM);
+}
 
 

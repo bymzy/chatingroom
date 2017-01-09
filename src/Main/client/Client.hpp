@@ -15,7 +15,7 @@ public:
         LogicService("CRClient"),
         mIP(ip), mPort(port), mUserName(user),
         mNetService(this, ""), mLayout(this),
-        mCurrentRoom(INVALID_ROOM_ID, "", "")
+        mCurrentRoom(INVALID_ROOM_ID, "", ""), mConnId(0)
     {
     }
 
@@ -31,6 +31,9 @@ public:
 
     /* handle client input */
     void HandleInput(std::string input);
+
+    /* send logon info to server */ 
+    void SendLogon();
 
 private:
     virtual int Init();
@@ -59,6 +62,9 @@ private:
     Layout mLayout;
     map_id_user mOnlines;
     Room mCurrentRoom;
+
+    /* connid to server */
+    uint64_t mConnId;
 };
 
 
