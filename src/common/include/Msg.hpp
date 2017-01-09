@@ -100,6 +100,16 @@ public:
         memcpy(mData, &temp , sizeof(int));
     }
 
+    Msg *Dup()
+    {
+        Msg *ret = new Msg(mWriteOffset);
+        memcpy(ret->mData, mData, mWriteOffset + HEAD_LENGTH);
+        ret->mWriteOffset = mWriteOffset;
+        ret->ResetReadOffset();
+        ret->SetLen();
+        return ret;
+    }
+
 private:
     /* current left size */
     int LeftSize()

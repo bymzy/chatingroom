@@ -75,17 +75,12 @@ Worker::HandleLogon(Msg *msg, std::string ip, unsigned short port,
     Msg *reply = new Msg;
     int err = 0;
     std::string errstr;
-    User *user = NULL;
 
     err = mRoomKeeper.HandleLogon(name, ip, port, connId, errstr);
 
-    (*reply) << MsgType::c2s_logon_res;
+    (*reply) << MsgType::s2c_logon_res;
     (*reply) << err;
     (*reply) << "success";
-
-    if (0 == err) {
-        mRoomKeeper.GetRoomUserListMsg(HALL_ID, reply); 
-    }
 
     reply->SetLen();
     SendMessage(connId, reply);

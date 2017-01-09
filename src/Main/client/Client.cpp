@@ -52,8 +52,12 @@ CRClient::RecvMessage(OperContext *ctx)
 
     switch(msgType)
     {
-        case MsgType::c2s_logon_res:
+        case MsgType::s2c_logon_res:
             HandleLogonRes(msg);
+            break;
+        case MsgType::s2c_room_info:
+            ParseRoomInfo(msg);
+            UpdateWindowUserList();
             break;
     }
 
@@ -74,6 +78,9 @@ CRClient::Process(OperContext *ctx)
             break;
         case OperContext::OP_SEND:
             mNetService.Enqueue(ctx);
+            break;
+        case OperContext::OP_DROP:
+            HandleDrop(ctx);
             break;
         default:
             processed = false;
@@ -99,10 +106,7 @@ CRClient::HandleLogonRes(Msg *msg)
 
     debug_log("handle logon " << err
             << ", errstr: " << errstr);
-    if (0 == err) {
-        ParseRoomAndUserList(msg);
-        UpdateWindowUserList();
-    } else {
+    if (0 != err) {
         error_log("logon failed, errno: " << err
                 << ", errstr: " << errstr);
         /* TODO exit normally */
@@ -112,7 +116,7 @@ CRClient::HandleLogonRes(Msg *msg)
 }
 
 void 
-CRClient::ParseRoomAndUserList(Msg *msg)
+CRClient::ParseRoomInfo(Msg *msg)
 {
     uint32_t count = 0;
     iter_id_user iter = mOnlines.begin();
@@ -159,6 +163,11 @@ CRClient::UpdateWindowUserList()
 
 void
 CRClient::LogonFailed()
+{
+}
+
+void
+CRClient::HandleDrop(OperContext *ctx)
 {
 }
 

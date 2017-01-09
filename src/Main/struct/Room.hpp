@@ -37,6 +37,11 @@ public:
         mID = id;
     }
 
+    uint32_t GetId()
+    {
+        return mID;
+    }
+
     void Encode(Msg *msg)
     {
         uint32_t count = mUsers.size();

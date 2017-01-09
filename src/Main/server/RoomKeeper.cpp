@@ -2,7 +2,10 @@
 #include "assert.h"
 #include "Err.hpp"
 #include "include/Log.hpp"
+#include "include/Context.hpp"
+#include "MsgType.hpp"
 #include "RoomKeeper.hpp"
+#include "Worker.hpp"
 
 int
 RoomKeeper::HandleLogon(const std::string& name, const std::string& ip,
@@ -70,6 +73,7 @@ RoomKeeper::Join(const std::string& roomName, const uint64_t& userId,
         assert(id_room_iter != mIdRoom.end());
         room = id_room_iter->second;
 
+        /* check password */
         if (!room->IsPasswdOkay(passwd)) {
             warn_log("passwd not match ");
             err = Err::room_passwd_not_match;
@@ -88,8 +92,11 @@ RoomKeeper::Join(const std::string& roomName, const uint64_t& userId,
         /* add user to this room */
         room->Add(userId);
 
-        /* set room id */
+        /* set user room id */
         SetUserRoomId(userId, roomId);
+
+        /* publish room info */
+        PublishRoomInfo(room);
 
     } while(0);
 
@@ -106,7 +113,7 @@ RoomKeeper::SetUserRoomId(uint64_t userId, uint32_t roomId)
 }
 
 void
-RoomKeeper::GetRoomUserListMsg(uint32_t roomId, Msg *msg)
+RoomKeeper::GetRoomInfoMsg(uint32_t roomId, Msg *msg)
 {
     std::set<uint64_t> users;
     std::set<uint64_t>::iterator iter_users;
@@ -120,6 +127,8 @@ RoomKeeper::GetRoomUserListMsg(uint32_t roomId, Msg *msg)
     assert(iter != mIdRoom.end());
     Room *room = iter->second; 
     users = room->GetAllUsers();
+
+    (*msg) << MsgType::s2c_room_info;
 
     /* encode room info */
     room->Encode(msg);
@@ -205,6 +214,33 @@ RoomKeeper::HandleDrop(uint64_t userId)
     return;
 }
 
+void
+RoomKeeper::PublishRoomInfo(Room *room)
+{
+    std::set<uint64_t> users;
+    std::set<uint64_t>::iterator iter_users;
+    
+    Msg msg;
+    GetRoomInfoMsg(room->GetId(), &msg);
+    msg.SetLen();
+
+    /**/
+    users = room->GetAllUsers();
+    iter_users = users.begin();
+    for (;iter_users != users.end(); ++iter_users) {
+        SendMessage(*iter_users, msg.Dup());
+    }
+}
+
+void
+RoomKeeper::SendMessage(uint64_t connId, Msg *msg)
+{
+    OperContext *ctx = new OperContext(OperContext::OP_SEND);
+    ctx->SetMessage(msg);
+    ctx->SetConnID(connId);
+    mWorker->Enqueue(ctx);
+    OperContext::DecRef(ctx);
+}
 
 
 

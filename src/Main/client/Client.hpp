@@ -37,9 +37,10 @@ private:
 private:
     void RecvMessage(OperContext *ctx);
     void HandleLogonRes(Msg *msg);
-    void ParseRoomAndUserList(Msg *msg);
+    void ParseRoomInfo(Msg *msg);
     void UpdateWindowUserList();
     void LogonFailed();
+    void HandleDrop(OperContext *ctx);
 
 private:
     std::string mIP;

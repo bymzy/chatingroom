@@ -15,7 +15,9 @@ int main()
 
     Msg msg;
     msg << a << b << c << d << e;
-    msg >> a >> b >> c >> d >> e;
+
+    Msg *t = msg.Dup();
+    (*t) >> a >> b >> c >> d >> e;
 
 
     uint64_t temp = htonll(d);
@@ -24,5 +26,6 @@ int main()
 
     std::cout << a <<" " << b << " " << c <<  " " << d  << " " << e <<std::endl;
     std:: cout << temp << " " << temp2 << std::endl; 
+    delete t;
 }
 

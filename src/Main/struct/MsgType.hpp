@@ -14,10 +14,14 @@ public:
         /* 4 bytes: msg type
          * 4 bytes: errno
          * string: errstr
+         * */
+        s2c_logon_res,
+
+        /* 4 bytes: msg type
          * 4 bytes: user count
          * repeated: user infos
          * */
-        c2s_logon_res,
+        s2c_room_info, 
     };
 };
 

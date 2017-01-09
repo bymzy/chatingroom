@@ -32,12 +32,16 @@ public:
     int Join(const std::string& roomName, const uint64_t& userId,
             const std::string& passwd, std::string errstr);
     
-    void GetRoomUserListMsg(uint32_t roomId, Msg* msg);
+    void GetRoomInfoMsg(uint32_t roomId, Msg* msg);
 
     int CreateRoom(const std::string& name, const std::string& passwd,
             std::string& errstr);
 
     void HandleDrop(uint64_t userId);
+
+    void PublishRoomInfo(Room *room);
+
+    void SendMessage(uint64_t connId, Msg *msg);
 
 private:
     void SetUserRoomId(uint64_t userId, uint32_t roomId);
