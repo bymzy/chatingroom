@@ -1,15 +1,12 @@
+1. add logger to CR
+2. enalbe logger level and log file count, log file size
+3. Test logger bechmark with yfs log
+4. client exit normally
+5. relogon
 
-
-2017/1/9 10:00
-1. join/left action has published. (now all users can be handled normally!)
-2. need to add chat message 
-
-2017/1/8 15:34
-1. can show user info in cdk window
-2. need to check why core 
-
-2017/1/7
-1. can create room now
-2. need to inform user join and left
+v2
+1. multi server on multi machine, one database brocast room message
+2. broadcast multiserver info
+3. change server if this server is down
 
 

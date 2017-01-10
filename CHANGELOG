@@ -1,0 +1,15 @@
+
+2017/1/9 22:00
+1. users can talk now
+2. add ThreadLogger to handle log
+
+2017/1/9 10:00
+1. join/left action has published. (now all users can be handled normally!)
+
+2017/1/8 15:34
+1. can show user info in cdk window
+
+2017/1/7
+1. can create room now
+
+
