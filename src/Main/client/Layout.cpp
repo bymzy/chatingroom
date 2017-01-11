@@ -90,7 +90,7 @@ Layout::Start()
         if (mInput->exitType == vNORMAL) {
             sprintf(temp, "%s", input);
             //addCDKSwindow(mDisplay, temp, BOTTOM);
-            mClient->HandleInput(std::string(input));
+            mClient->HandleInput(input);
         } else {
             sprintf(temp, "error exit: %s", input);
             addCDKSwindow(mDisplay, temp, BOTTOM);

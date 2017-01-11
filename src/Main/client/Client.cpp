@@ -168,8 +168,12 @@ CRClient::HandleDrop(OperContext *ctx)
 }
 
 void
-CRClient::HandleInput(std::string input)
+CRClient::HandleInput(char *input)
 {
+    bool parsed = false;
+    Cmd * cmd = new Cmd();
+    parsed = mInputParser.ParseInput(input, cmd);
+#if 0
     OperContext *ctx = new OperContext(OperContext::OP_SEND);
     Msg *msg = new Msg;
     (*msg) << MsgType::c2s_publish_chat_msg;
@@ -181,6 +185,7 @@ CRClient::HandleInput(std::string input)
     ctx->SetConnID(mConnId);
     mNetService.Enqueue(ctx);
     OperContext::DecRef(ctx);
+#endif
 }
 
 void

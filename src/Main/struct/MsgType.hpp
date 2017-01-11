@@ -33,6 +33,11 @@ public:
          * string: from user name
          * string: chat msg*/
         s2c_room_chat_msg = 5,
+
+        /* 4 bytes: msg type
+         * string: room name
+         * */
+        c2s_create_room,
     };
 };
 

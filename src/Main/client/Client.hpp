@@ -8,6 +8,7 @@
 #include "User.hpp"
 #include "Layout.hpp"
 #include "Room.hpp"
+#include "InputParser.hpp"
 
 class CRClient : public LogicService {
 public:
@@ -30,7 +31,7 @@ public:
     }
 
     /* handle client input */
-    void HandleInput(std::string input);
+    void HandleInput(char *input);
 
     /* send logon info to server */ 
     void SendLogon();
@@ -65,6 +66,7 @@ private:
 
     /* connid to server */
     uint64_t mConnId;
+    InputParser mInputParser;
 };
 
 

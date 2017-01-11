@@ -1,8 +1,9 @@
-1. add logger to CR
-2. enalbe logger level and log file count, log file size
-3. Test logger bechmark with yfs log
-4. client exit normally
-5. relogon
+add logger to CR
+enalbe logger level and log file count, log file size
+Test logger bechmark with yfs log
+client exit normally
+relogon
+create room
 
 v2
 1. multi server on multi machine, one database brocast room message
