@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -21,12 +22,12 @@ ThreadLogger::Init()
     time_t now = time(NULL);
 
     temp = localtime(&now);
-    strftime(outstr, sizeof(outstr), "%Y-%m-%d_%H:%M:%S", temp);
+    strftime(outstr, sizeof(outstr), "%Y-%m-%d_%H-%M-%S", temp);
 
     std::string logFile= LogDir + outstr + "-" + mFileName + ".log";
 
     /* open log file */
-    mFileFd = open(logFile.c_str(), O_WRONLY | O_CREAT, 0644);
+    mFileFd = open(logFile.c_str(), O_WRONLY | O_CREAT, 0777);
 
     if (mFileFd < 0) {
         err = errno; 
@@ -70,16 +71,19 @@ ThreadLogger::WriteLog(std::string log)
     struct tm *temp;
     time_t now = time(NULL);
     temp = localtime(&now);
-    strftime(outstr, sizeof(outstr), "%Y-%m-%d_%H:%M:%S", temp);
+    strftime(outstr, sizeof(outstr), "%Y-%m-%d %H:%M:%S", temp);
 
     /* get usec */
     struct timeval now2;
     gettimeofday(&now2, NULL);
     memset(usec, 0, 9);
-    sprintf(usec, ":%ld ", now2.tv_usec);
+    sprintf(usec, ".%ld ", now2.tv_usec);
 
+    /* get thread LWP id */
+    pid_t pid = syscall(SYS_gettid);
+    std::string threadStr = "- LWP: " + i2s(pid) + " ";
 
-    log = std::string(outstr) + std::string(usec) + log;
+    log = std::string(outstr) + std::string(usec) + threadStr + log;
 
     OperContext *ctx = new OperContext(OperContext::OP_RECV);
     Msg * msg = new Msg;

@@ -13,44 +13,44 @@ extern  ThreadLogger * g_logger;
 
 void WriteLog(std::string data);
 
-        //
+        
 #define debug_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [DEBUG] [" << __FUNCTION__ << "  "\
-           << __FILE__ << ":"<< __LINE__<< "]\n";\
+        ss << data << " [DEBUG] ["\
+           << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
 
 #define warn_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [WARN] [" << __FUNCTION__ << "  "\
-           << __FILE__ << ":"<< __LINE__<< "]\n";\
+        ss << data << " [WARN] ["\
+           << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
 
 #define error_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [ERROR] [" << __FUNCTION__ << "  "\
-           << __FILE__ << ":"<< __LINE__<< "]\n";\
+        ss << data << " [ERROR] ["\
+           << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
 
 #define trace_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [TRACE] [" << __FUNCTION__ << "  "\
-           << __FILE__ << ":"<< __LINE__<< "]\n";\
+        ss << data << " [TRACE] ["\
+           << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
 
 #define info_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [INFO] [" << __FUNCTION__ << "  "\
-           << __FILE__ << ":"<< __LINE__<< "]\n";\
+        ss << data << " [INFO] ["\
+           << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
 

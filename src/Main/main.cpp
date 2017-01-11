@@ -6,6 +6,7 @@
 #include "client/Client.hpp"
 #include "server/Server.hpp"
 #include "include/Log.hpp"
+#include "include/ThreadLogger.hpp"
 
 ThreadLogger *g_logger = NULL;
 
@@ -57,8 +58,12 @@ int main(int argc, char *argv[])
 
 
     if (isServer) {
+        g_logger = new ThreadLogger("CRServer");
+        g_logger->Start();
         err = RunAsServer();
     } else {
+        g_logger = new ThreadLogger("CRClient");
+        g_logger->Start();
         err = RunAsClient();
     }
 

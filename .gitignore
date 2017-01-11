@@ -1,6 +1,5 @@
-
-build/
+build/*
+*.o
 *.swp
-.o
-.idea/
-
+*.pyc
+.idea/*
