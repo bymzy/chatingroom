@@ -23,11 +23,13 @@ private:
     virtual bool Process(OperContext *ctx);
 
 private:
-    void RecvMessage(OperContext *ctx);
-    void HandleLogon(Msg*msg, std::string ip, unsigned short port, uint64_t connId);
-    void SendMessage(uint64_t connId, Msg *msg);
     void HandleDrop(OperContext *ctx);
+    void RecvMessage(OperContext *ctx);
+
+    void SendMessage(uint64_t connId, Msg *msg);
+    void HandleLogon(Msg*msg, std::string ip, unsigned short port, uint64_t connId);
     void PublishChatMessage(Msg *msg, uint64_t userId);
+    void HandleCreateRoom(Msg *msg, uint64_t connId);
 
 public:
     LogicService *mNet;

@@ -38,6 +38,18 @@ public:
          * string: room name
          * */
         c2s_create_room,
+
+        /* 4 bytes: msg type
+         * 4 byts: errno
+         * string: errstr
+         * string: room name
+         * */
+        s2c_create_room_res,
+
+        /* 4 bytes: msg type
+         * string: warn info
+         * */
+        local_warn_msg,
     };
 };
 

@@ -24,7 +24,7 @@ public:
     }CmdType;
 
 public:
-    Cmd(): mType(CMD_null), mMsg(NULL), mInvalid(false)
+    Cmd(): mType(CMD_null), mMsg(NULL), mInvalid(true)
     {
     }
     ~Cmd()
@@ -57,9 +57,19 @@ public:
         mInvalid = invalid;
     }
 
+    bool IsInvalid()
+    {
+        return mInvalid;
+    }
+
     void SetErrStr(const std::string & str)
     {
         mErrStr = str;
+    }
+
+    std::string GetErrStr()
+    {
+        return mErrStr;
     }
 
 private:

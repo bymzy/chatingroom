@@ -49,6 +49,8 @@ private:
     void LogonFailed();
     void HandleDrop(OperContext *ctx);
     void ReceiveChatMessage(Msg *msg);
+    void ReceiveLocalWarnMessage(Msg *msg);
+    void HandleCreateRoomRes(Msg *msg);
     
 
 private:

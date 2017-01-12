@@ -163,14 +163,22 @@ RoomKeeper::CreateRoom(const std::string& name, const std::string& passwd,
             debug_log("room " << name << " already created");
             err = Err::room_with_same_name_already_exists;
             errstr = "room with same name already exists";
+
+            debug_log("create room: " << name << " failed"
+                    << ", errstr: " << errstr);
             break;
         }
+
+        /* TODO check room name valid? */
 
         room = new Room(mRoomId, name, passwd);
         mRoomNames.insert(std::make_pair(name, mRoomId));
         mIdRoom.insert(std::make_pair(mRoomId, room));
 
         ++mRoomId;
+
+        debug_log("create room: " << name << " succeed"
+                << ", room id: " << mRoomId -1);
     } while(0);
 
     return err;

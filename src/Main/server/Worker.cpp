@@ -61,6 +61,9 @@ Worker::RecvMessage(OperContext *ctx)
         case MsgType::c2s_publish_chat_msg:
             PublishChatMessage(msg, connId);
             break;
+        case MsgType::c2s_create_room:
+            HandleCreateRoom(msg, connId);
+            break;
         default:
             break;
     }
@@ -126,6 +129,31 @@ Worker::PublishChatMessage(Msg *msg, uint64_t userId)
     (*msg) >> input;
 
     mRoomKeeper.PublishRoomMessage(roomId, userId, input);
+}
+
+void
+Worker::HandleCreateRoom(Msg *msg, uint64_t connId)
+{
+    int err = 0;
+    std::string errstr;
+    std::string roomName;
+    std::string passwd;
+    Msg *reply = NULL;
+
+    (*msg) >> roomName;
+    (*msg) >> passwd;
+
+    err = mRoomKeeper.CreateRoom(roomName, passwd, errstr);
+
+    /* send response */
+    reply = new Msg;
+    (*msg) << MsgType::s2c_create_room_res;
+    (*msg) << err;
+    (*msg) << errstr;
+    (*msg) << roomName;
+    msg->SetLen();
+
+    SendMessage(connId, reply);
 }
 
 

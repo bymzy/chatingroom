@@ -87,24 +87,32 @@ InputParser::ParseCreateRoom(char *input, Cmd *cmd)
             break;
         }
 
+        /* TODO create room with passwd */
+
         parsed = true;
         roomlen = strlen(input + 1);
         /* parse room name */
         if (roomlen < 4 || roomlen > 20) {
-            cmd->SetInvalid(true);
             cmd->SetType(Cmd::CMD_create_room);
             cmd->SetErrStr("room name at least 4 at most 20 chars length!");
-            debug_log("create room, but invalid name: " << (input + 1));
+            debug_log("create room command, but invalid name: " << (input + 1));
         } else {
+            cmd->SetInvalid(false);
             memset(room, 0, 21);
             strcpy(room, input + 1);
             Msg *msg = new Msg;
             (*msg) << MsgType::c2s_create_room;
             (*msg) << room; 
+            /* set room passwd to empty tempory */
+            (*msg) << "";
             msg->SetLen();
             cmd->SetMsg(msg);
+            debug_log("create room command, name: " << room
+                    << ", passwd: " << "");
         }
     } while(0);
+
+    return parsed;
 }
 
 bool 

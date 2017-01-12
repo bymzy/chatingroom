@@ -48,6 +48,12 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_room_chat_msg:
             ReceiveChatMessage(msg);
             break;
+        case MsgType::local_warn_msg:
+            ReceiveLocalWarnMessage(msg); 
+            break;
+        case MsgType::s2c_create_room_res:
+            HandleCreateRoomRes(msg);
+            break;
     }
 
     delete msg;
@@ -173,19 +179,49 @@ CRClient::HandleInput(char *input)
     bool parsed = false;
     Cmd * cmd = new Cmd();
     parsed = mInputParser.ParseInput(input, cmd);
-#if 0
-    OperContext *ctx = new OperContext(OperContext::OP_SEND);
-    Msg *msg = new Msg;
-    (*msg) << MsgType::c2s_publish_chat_msg;
-    (*msg) << mCurrentRoom.GetId();
-    (*msg) << input;
-    msg->SetLen();
 
-    ctx->SetMessage(msg);
-    ctx->SetConnID(mConnId);
-    mNetService.Enqueue(ctx);
-    OperContext::DecRef(ctx);
+    if (parsed) {
+        if (cmd->IsInvalid()) {
+            /* invalid command, need to show warn info */
+            mLayout.DisplaySystemMessage(cmd->GetErrStr());
+#if 0
+            OperContext *ctx = new OperContext(OperContext::OP_RECV);
+            Msg *msg = new Msg;
+            (*msg) << MsgType::local_warn_msg;
+            (*msg) << cmd->GetErrStr();
+            msg->SetLen();
+
+            ctx->SetMessage(msg);
+            ctx->SetConnID(-1);
+            mNetService.Enqueue(ctx);
+            OperContext::DecRef(ctx);
 #endif
+        } else {
+            /* valid send cmd to server */
+            OperContext *ctx = new OperContext(OperContext::OP_SEND);
+            ctx->SetMessage(cmd->GetMsg());
+            ctx->SetConnID(mConnId);
+            mNetService.Enqueue(ctx);
+            OperContext::DecRef(ctx);
+        }
+
+    } else {
+        /* is a normal chat message */
+        OperContext *ctx = new OperContext(OperContext::OP_SEND);
+        Msg *msg = new Msg;
+        (*msg) << MsgType::c2s_publish_chat_msg;
+        (*msg) << mCurrentRoom.GetId();
+        (*msg) << std::string(input);
+        msg->SetLen();
+
+        ctx->SetMessage(msg);
+        ctx->SetConnID(mConnId);
+        mNetService.Enqueue(ctx);
+        OperContext::DecRef(ctx);
+    }
+
+    delete cmd;
+    cmd = NULL;
 }
 
 void
@@ -214,6 +250,31 @@ CRClient::SendLogon()
     OperContext::DecRef(replyctx);
 }
 
+void
+CRClient::ReceiveLocalWarnMessage(Msg *msg)
+{
+
+}
+
+void
+CRClient::HandleCreateRoomRes(Msg *msg)
+{
+    int err = 0;
+    std::string errstr;
+    std::string roomName;
+    (*msg) >> err;
+    (*msg) >> errstr;
+    (*msg) >> roomName;
+
+    if (err = 0) {
+        std::string info = "create room " + roomName + " succeed!";
+        mLayout.DisplaySystemMessage(info);
+    } else {
+        std::string info = "create room " + roomName + " failed! reason: ";
+        info += errstr;
+        mLayout.DisplaySystemMessage(info);
+    }
+}
 
 
 
