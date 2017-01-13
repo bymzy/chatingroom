@@ -100,6 +100,8 @@ RoomKeeper::Join(const std::string& roomName, const uint64_t& userId,
         /* publish room info */
         PublishRoomInfo(room);
 
+        debug_log("user " << userId 
+                << " join room " << roomName << " success!");
     } while(0);
 
     return err;
@@ -134,6 +136,7 @@ RoomKeeper::GetRoomInfoMsg(uint32_t roomId, Msg *msg)
 
     /* encode room info */
     room->Encode(msg);
+    debug_log("GetRoomInfoMsg room info " << room->DebugString());
 
     /* encode msg with user info */
     count = users.size();

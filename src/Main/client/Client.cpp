@@ -182,6 +182,7 @@ CRClient::HandleInput(char *input)
 
     if (parsed) {
         if (cmd->IsInvalid()) {
+            debug_log("invalid command " << input);
             /* invalid command, need to show warn info */
             mLayout.DisplaySystemMessage(cmd->GetErrStr());
 #if 0
@@ -197,6 +198,7 @@ CRClient::HandleInput(char *input)
             OperContext::DecRef(ctx);
 #endif
         } else {
+            debug_log("valid command " << input);
             /* valid send cmd to server */
             OperContext *ctx = new OperContext(OperContext::OP_SEND);
             ctx->SetMessage(cmd->GetMsg());
@@ -206,6 +208,7 @@ CRClient::HandleInput(char *input)
         }
 
     } else {
+        debug_log("normal chat message " << input);
         /* is a normal chat message */
         OperContext *ctx = new OperContext(OperContext::OP_SEND);
         Msg *msg = new Msg;
