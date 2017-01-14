@@ -50,6 +50,12 @@ public:
          * string: warn info
          * */
         local_warn_msg,
+
+        /* 4 bytes: msg type
+         * 4 bytes: room count
+         * repeated: room info
+         * */
+        s2c_room_list,
     };
 };
 

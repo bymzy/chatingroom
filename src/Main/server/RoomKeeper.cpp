@@ -219,6 +219,11 @@ RoomKeeper::HandleDrop(uint64_t userId)
         mUserNames.erase(user->GetName());
         mIdUser.erase(userId);
 
+        debug_log("user " << user->GetName()
+                << ", user id: " << userId
+                << ", dropped from room: " << room->GetName()
+                << ", room id: " << room->GetId())
+
         delete user;
         user = NULL;
 
@@ -272,7 +277,9 @@ RoomKeeper::PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::stri
     msg << input;
     msg.SetLen();
 
-    debug_log("receive room chat message: " << user->GetName() << " " << input);
+    debug_log("receive room chat message: " << user->GetName() << " " << input
+            << ", room id: " << roomId
+            << ", room name: " << room->GetName());
 
     users = room->GetAllUsers();
     user_index = users.begin();
@@ -280,6 +287,31 @@ RoomKeeper::PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::stri
     for (;user_index != users.end(); ++user_index) {
         temp = GetUserById(*user_index);
         SendMessage(temp->GetId(), msg.Dup()); 
+    }
+}
+
+void
+RoomKeeper::PublishRoomList()
+{
+    Room *room = NULL;
+    User *user = NULL;
+    Msg msg;
+    msg << MsgType::s2c_room_list;
+    msg << mIdRoom.size();
+
+    iter_id_room iter = mIdRoom.begin();
+    for (;iter != mIdRoom.end(); ++iter) {
+        room = iter->second;
+        room->Encode(&msg);
+    }
+
+    msg.SetLen();
+
+    /* send to all users */
+    iter_id_user ituser = mIdUser.begin();
+    for (;ituser != mIdUser.end(); ++ituser) {
+        user = ituser->second;
+        SendMessage(user->GetId(), msg.Dup());
     }
 }
 

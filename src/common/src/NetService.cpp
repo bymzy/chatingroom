@@ -20,9 +20,11 @@ NetService::StartListener()
         accepter = new Accepter(this, mDriver, iter->ip, iter->port);
         err = accepter->StartListen();
         if (0 != err) {
+            error_log("accepter listen failed!");
             break;
         }
         mAccepters.insert(std::make_pair(iter->ToString(), accepter));
+        debug_log("netservice listen on ip: port" << iter->ip << ":" << iter->port);
     }
 
     return err;
@@ -69,6 +71,8 @@ NetService::StartConnectRemote(std::string ip, short port, uint64_t& connId)
         assert(iter == mConns.end());
         mConns.insert(std::make_pair(connId, conn));
         conn->RegistRWEvent(clientSocket->GetFd());
+        debug_log("connect to remote ip:port: " << ip << ":" << port << ", conn id "
+                << connId);
 
     } while(0);
 
@@ -138,6 +142,10 @@ NetService::AcceptConnection(OperContext *ctx)
     AcceptContext *accCtx = (AcceptContext*)ctx;
     TcpSocket * socket = accCtx->mClientSocket;
 
+    debug_log("NetService::AcceptConnection,fd: " << socket->GetFd()
+            <<", ip: " << socket->mIP
+            <<", port: " << socket->mPort);
+
     TcpConnection *conn = new TcpConnection(this, mDriver, socket, connID);
     std::map<uint64_t, TcpConnection*>::iterator iter = mConns.find(connID);
     assert(iter == mConns.end());
@@ -180,6 +188,7 @@ NetService::SendMsg(OperContext *ctx)
         iter = mConns.find(ctx->GetConnID());
         if (iter == mConns.end()) {
             delete ctx->GetMessage();
+            warn_log("send msg, but connection not found!");
             break;
         }
         
@@ -198,9 +207,13 @@ NetService::DropConnection(OperContext *ctx)
     TcpConnection * conn = NULL;
     std::map<uint64_t, TcpConnection*>::iterator iter;
 
+    debug_log("drop connection conn id: " << ctx->mConnID);
     iter = mConns.find(connId);
     if (iter != mConns.end()) {
         conn = iter->second;
+        debug_log("NetService drop connecton, conn id: " << conn->mConnID
+                <<", ip: " << conn->GetClientIP()
+                <<", port: " << conn->GetClientPort());
         delete conn;
         mConns.erase(iter);
     }

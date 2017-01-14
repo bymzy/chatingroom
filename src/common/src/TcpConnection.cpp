@@ -33,6 +33,8 @@ TcpConnection::ReadData(int fd)
 
     do {
         if (mSocket->NoOK()) {
+            warn_log("event for read but socket no okay"
+                    << ", status: " << mClosed);
             err = EINVAL;
             break;
         }
@@ -42,6 +44,8 @@ TcpConnection::ReadData(int fd)
             err = mSocket->PreRecv(dataLen);
             /* sizeof retun unsigned, so compare dateLen with 0 first */
             if ((0 != err) || (dataLen < 0 ) || (dataLen < sizeof(int))) {
+                error_log("TcpConnection prerecv failed, error: " << err
+                        << ", dataLen: " << dataLen);
                 Close();
                 break;
             }
@@ -58,6 +62,7 @@ TcpConnection::ReadData(int fd)
         err = mSocket->Recv(mCurrentRecvMsg->GetBuffer() + mRecved,
                 mToRecv - mRecved, recved);
         if (0 != err) {
+            error_log("TcpConnection read data failed, error: " << err);
             Close();
             break;
         }
@@ -106,6 +111,8 @@ TcpConnection::WriteData(int fd)
     pthread_mutex_lock(&mMutex);
     do {
         if (mClosed || mSocket->NoOK()) {
+            warn_log("event for write but socket no okay"
+                    << ", status: " << mClosed);
             err = EINVAL;
             break;
         }
@@ -120,6 +127,10 @@ TcpConnection::WriteData(int fd)
         err = mSocket->Send(mCurrentSendMsg->GetBuffer() + mSent, 
                 mToSend, sent);
         if (0 != err) {
+            error_log("TcpConnection::WriteData failed, error: " << err
+                    << ", conn id: " << mConnID
+                    << ", error: " << strerror(err));
+
             ResetSend();
             Close();
 
@@ -182,6 +193,7 @@ TcpConnection::Close()
     }
     pthread_mutex_unlock(&mMutex);
 
+    debug_log("close connection , id: " << mConnID)
     return 0;
 }
 

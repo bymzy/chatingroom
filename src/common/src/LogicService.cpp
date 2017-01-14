@@ -14,6 +14,8 @@ LogicService::Run()
 
     err = Init();
     if (0 != err) {
+        error_log("LogicService init failed, name: " << mName
+                << ", error: " << err);
         return;
     }
 

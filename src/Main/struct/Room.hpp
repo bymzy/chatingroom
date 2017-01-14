@@ -12,6 +12,11 @@
 
 class Room {
 public:
+    Room():
+        mID(INVALID_ROOM_ID), mName(""), mPassWord("")
+    {
+    }
+
     Room(uint32_t id, std::string name, std::string passwd):
         mID(id), mName(name), mPassWord(passwd)
     {
@@ -75,8 +80,15 @@ public:
     {
         std::stringstream ss;
         ss << " room name: " << mName
-            << " room id: " << mID;
+            << " room id: " << mID
+            << " user count: " << mUsers.size();
+          
         return ss.str();
+    }
+
+    std::string GetName()
+    {
+        return mName;
     }
 
 private:

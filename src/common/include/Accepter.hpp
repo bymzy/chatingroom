@@ -50,6 +50,7 @@ public:
                 break;
             }
             
+            debug_log("accpeter accept client " << ip << ":" << port);
             clientSocket->SetAddr(ip, port);
 
             AcceptContext *ctx = new AcceptContext(clientSocket);

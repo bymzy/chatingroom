@@ -147,13 +147,16 @@ Worker::HandleCreateRoom(Msg *msg, uint64_t connId)
 
     /* send response */
     reply = new Msg;
-    (*msg) << MsgType::s2c_create_room_res;
-    (*msg) << err;
-    (*msg) << errstr;
-    (*msg) << roomName;
-    msg->SetLen();
+    (*reply) << MsgType::s2c_create_room_res;
+    (*reply) << err;
+    (*reply) << errstr;
+    (*reply) << roomName;
+    reply->SetLen();
 
     SendMessage(connId, reply);
+
+    /* publish room list */
+    mRoomKeeper.PublishRoomList();
 }
 
 

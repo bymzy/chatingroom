@@ -54,6 +54,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_create_room_res:
             HandleCreateRoomRes(msg);
             break;
+        case MsgType::s2c_room_list:
+            HandleUpdateRoomList(msg);
+            break;
     }
 
     delete msg;
@@ -185,18 +188,6 @@ CRClient::HandleInput(char *input)
             debug_log("invalid command " << input);
             /* invalid command, need to show warn info */
             mLayout.DisplaySystemMessage(cmd->GetErrStr());
-#if 0
-            OperContext *ctx = new OperContext(OperContext::OP_RECV);
-            Msg *msg = new Msg;
-            (*msg) << MsgType::local_warn_msg;
-            (*msg) << cmd->GetErrStr();
-            msg->SetLen();
-
-            ctx->SetMessage(msg);
-            ctx->SetConnID(-1);
-            mNetService.Enqueue(ctx);
-            OperContext::DecRef(ctx);
-#endif
         } else {
             debug_log("valid command " << input);
             /* valid send cmd to server */
@@ -208,7 +199,6 @@ CRClient::HandleInput(char *input)
         }
 
     } else {
-        debug_log("normal chat message " << input);
         /* is a normal chat message */
         OperContext *ctx = new OperContext(OperContext::OP_SEND);
         Msg *msg = new Msg;
@@ -221,6 +211,8 @@ CRClient::HandleInput(char *input)
         ctx->SetConnID(mConnId);
         mNetService.Enqueue(ctx);
         OperContext::DecRef(ctx);
+        debug_log("normal chat message " << input
+                << ", room id: " << mCurrentRoom.GetId());
     }
 
     delete cmd;
@@ -269,13 +261,40 @@ CRClient::HandleCreateRoomRes(Msg *msg)
     (*msg) >> errstr;
     (*msg) >> roomName;
 
-    if (err = 0) {
+    debug_log("HandleCreateRoomRes, err: " << err
+            << ", errstr: " << errstr
+            << ", roomName: " << roomName);
+
+    if (err == 0) {
         std::string info = "create room " + roomName + " succeed!";
         mLayout.DisplaySystemMessage(info);
     } else {
         std::string info = "create room " + roomName + " failed! reason: ";
         info += errstr;
         mLayout.DisplaySystemMessage(info);
+    }
+}
+
+void
+CRClient::HandleUpdateRoomList(Msg *msg)
+{
+    Room *room = NULL;
+    uint32_t count = 0;
+    (*msg) >> count;
+
+    iter_id_room iter = mRooms.begin();
+    /* clear all current rooms */
+    for (;iter != mRooms.end(); ++iter) {
+        delete iter->second;
+    }
+    mRooms.clear();
+
+    debug_log("room count: " << count);
+    for (uint32_t i = 0; i < count; ++i) {
+        room = new Room;
+        room->Decode(msg);
+        debug_log("UpdateRoomList, room info: " << room->DebugString());
+        mRooms.insert(std::make_pair(room->GetId(), room));
     }
 }
 

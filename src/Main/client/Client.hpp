@@ -51,6 +51,7 @@ private:
     void ReceiveChatMessage(Msg *msg);
     void ReceiveLocalWarnMessage(Msg *msg);
     void HandleCreateRoomRes(Msg *msg);
+    void HandleUpdateRoomList(Msg *msg);
     
 
 private:
@@ -63,8 +64,11 @@ private:
     User mUser;
     NetService mNetService; 
     Layout mLayout;
-    map_id_user mOnlines;
+
+    map_id_room mRooms;
+
     Room mCurrentRoom;
+    map_id_user mOnlines;
 
     /* connid to server */
     uint64_t mConnId;

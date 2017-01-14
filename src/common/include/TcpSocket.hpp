@@ -43,6 +43,7 @@ public:
                 mSocket = socket(AF_INET, SOCK_STREAM, 0);
                 if (mSocket == -1) {
                     err = errno;
+                    error_log(strerror(err));
                 }
             } else {
                 int opt;
@@ -54,6 +55,8 @@ public:
                     break;
                 }
                 err = errno;
+                error_log("getsockopt failed, errno: " << errno
+                        << ", errstr: " << strerror(errno));
             }
 
         } while(0);
@@ -84,12 +87,14 @@ public:
             err = bind(mSocket, (struct sockaddr*)&listenAddr, sizeof(sockaddr));
             if (0 != err) {
                 err = errno;
+                error_log(strerror(errno));
                 break;
             }
 
             err = listen(mSocket, MAX_BACK_LOG);
             if (0 != err) {
                 err = errno;
+                error_log(strerror(errno));
                 break;
             }
 
@@ -115,6 +120,8 @@ public:
             if ( 0 != err ) {
                 if ( EINPROGRESS != errno ) {
                     err = errno;
+                    error_log("socket connect failed,errno : " << errno
+                            << ", errstr: " << strerror(errno));
                     break;
                 }
                 err = CheckConnect();
@@ -142,6 +149,8 @@ public:
             tempFd = accept(mSocket, (struct sockaddr*)&clientAddr, &len);
             if (tempFd < 0) {
                 err = errno;
+                error_log("accept failed! error: " << errno
+                        << ", errstr: " << strerror(errno));
                 break;
             }
 
@@ -163,6 +172,7 @@ public:
             mClosed = true;
         }
 
+        debug_log("close socket");
         return err;
     }
 
@@ -178,6 +188,7 @@ public:
 
         if (fcntl(mSocket, F_SETFL, fcntl(mSocket, F_GETFD, 0) | O_NONBLOCK) < 0) {
             err = errno;
+            error_log("fcntl set nonblock failed, error:"<<strerror(err));
         }
         return err;
     }
@@ -190,6 +201,7 @@ public:
         err = setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
         if (0 != err) {
             err = errno;
+            error_log("set reuse addr failed!");
         }
         
         return err;
@@ -213,6 +225,7 @@ public:
 
             ret = select(mSocket+1,&rset,&wset,NULL,&tv);
             if ( ret < 0) {
+                error_log("select failed,error:" << strerror(errno));
                 err = errno;
                 break;
             } else if ( ret ==0 ) {
@@ -226,6 +239,7 @@ public:
                     }
 
                     if (0 != err) {
+                        error_log("connect failed,error:" << strerror(errno));
                         err = errno;
                         break;
                     }
@@ -263,6 +277,8 @@ public:
             err = errno;
             if (err != EAGAIN &&
                     err != EWOULDBLOCK) {
+                error_log("send buffer failed, errno: " << errno
+                        << ", errstr: " << strerror(errno));
                 mError = err;
             } else {
                 err = 0;
@@ -293,6 +309,8 @@ public:
             if ( ret < 0 ) {
                 err = errno;
                 mError = err;
+                error_log("send buffer failed, errno: " << errno
+                        << ", errstr: " << strerror(errno));
                 break;
             }
 
@@ -331,6 +349,7 @@ public:
 
         do {
             if (mPreRecv) {
+                error_log("has pre received, should not do this again!");
                 assert(0);
                 return 0;
             }
@@ -338,6 +357,8 @@ public:
 
             err = RecvAll(buf, sizeof(int));
             if (0 != err) {
+                error_log("PreRecv failed! error: " <<err
+                        << ", errstr: " << strerror(err));
                 break;
             }
 
@@ -402,8 +423,11 @@ public:
             if (ret < 0) {
                 err = errno;
                 mError = err;
+                error_log("recv buffer failed, errno: " << errno
+                        << ", errstr: " << strerror(errno));
                 break;
             } else if (ret == 0) {
+                debug_log("client closed!");
                 err = EINVAL;
                 mClosed = true;
                 break;
