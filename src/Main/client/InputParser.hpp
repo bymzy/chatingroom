@@ -10,6 +10,7 @@
  * /q            exit room, exit HALL--> exit program 
  * /e         exit program
  * /i         show current info
+ * /l [room,user] list room and user info
  * */
 
 #ifndef __CLIENT_INPUT_PARSER_HPP__

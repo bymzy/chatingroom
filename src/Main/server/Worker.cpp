@@ -152,7 +152,6 @@ Worker::HandleCreateRoom(Msg *msg, uint64_t connId)
     (*reply) << errstr;
     (*reply) << roomName;
     reply->SetLen();
-
     SendMessage(connId, reply);
 
     /* publish room list */

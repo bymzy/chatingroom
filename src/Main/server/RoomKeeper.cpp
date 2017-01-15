@@ -295,16 +295,18 @@ RoomKeeper::PublishRoomList()
 {
     Room *room = NULL;
     User *user = NULL;
+    uint32_t count = mIdRoom.size();
     Msg msg;
     msg << MsgType::s2c_room_list;
-    msg << mIdRoom.size();
+    msg << count;
 
+    debug_log("publish room list cout: " << mIdRoom.size());
     iter_id_room iter = mIdRoom.begin();
     for (;iter != mIdRoom.end(); ++iter) {
         room = iter->second;
         room->Encode(&msg);
+        debug_log("room info: " << room->DebugString());
     }
-
     msg.SetLen();
 
     /* send to all users */

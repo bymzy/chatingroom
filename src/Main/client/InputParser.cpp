@@ -20,7 +20,7 @@ InputParser::ParseInput(char *input, Cmd *cmd)
         if (i == len) {
             cmd->SetType(Cmd::CMD_null);
             /*empty message or all ' '*/
-            debug_log("invalid input:" << input);
+            debug_log("empty input:" << input);
             break;
         }
 
@@ -29,7 +29,7 @@ InputParser::ParseInput(char *input, Cmd *cmd)
         if (input[i] == '/') {
             ++i;
             parsed = ParseCmdMessage(input + i, cmd);    
-        } 
+        }
 
     } while(0);
 
@@ -79,37 +79,89 @@ bool
 InputParser::ParseCreateRoom(char *input, Cmd *cmd)
 {
     bool parsed = false;
-    size_t roomlen = 0;
-    char room[21];
+    char *index = input;
+
+    /* waring: start end is [ ) */
+    int namestart = 0;
+    int nameend = 0;
+    int roomlen = 0;
+
+    int passwdstart = 0;
+    int passwdend = 0;
+    int passwdlen = 0;
 
     do {
-        if (*input != ' ') {
+        /* skip all space */
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* check if name is empty */
+        if (*index == 0) {
+            cmd->SetType(Cmd::CMD_create_room);
+            cmd->SetErrStr("create room but empty room name (4-20 char length)");
+            debug_log("create room command, but invalid name: " << (input + 1));
             break;
         }
 
-        /* TODO create room with passwd */
+        namestart = index - input;
+        /* get room name */
+        while (*index != ' ') {
+            ++index;
+        }
+        nameend = index - input;
+        roomlen = nameend - namestart;
 
-        parsed = true;
-        roomlen = strlen(input + 1);
-        /* parse room name */
+        /* check room name length */
         if (roomlen < 4 || roomlen > 20) {
             cmd->SetType(Cmd::CMD_create_room);
             cmd->SetErrStr("room name at least 4 at most 20 chars length!");
-            debug_log("create room command, but invalid name: " << (input + 1));
-        } else {
-            cmd->SetInvalid(false);
-            memset(room, 0, 21);
-            strcpy(room, input + 1);
-            Msg *msg = new Msg;
-            (*msg) << MsgType::c2s_create_room;
-            (*msg) << room; 
-            /* set room passwd to empty tempory */
-            (*msg) << "";
-            msg->SetLen();
-            cmd->SetMsg(msg);
-            debug_log("create room command, name: " << room
-                    << ", passwd: " << "");
+            debug_log("create room command, but invalid name: " 
+                    << (input + namestart));
+            break;
         }
+
+        /* skip all space */
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* get room passwd */
+        passwdstart = index - input; 
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        passwdend = index - input;
+        
+        passwdlen = passwdend - passwdstart;
+
+        if (passwdlen < 4 || passwdlen > 20) {
+            cmd->SetType(Cmd::CMD_create_room);
+            cmd->SetErrStr("room passwd at least 4 at most 20 chars length!");
+            debug_log("create room command, but invalid passwd: "
+                    << (input + passwdstart));
+            break;
+        }
+
+        parsed = true;
+
+        std::string name;
+        name.assign(input + namestart, nameend - namestart);
+
+        std::string passwd;
+        passwd.assign(input + passwdstart, passwdend - passwdstart);
+        
+        cmd->SetInvalid(false);
+
+        Msg *msg = new Msg;
+        (*msg) << MsgType::c2s_create_room;
+        (*msg) << name;
+        (*msg) << passwd;
+        msg->SetLen();
+        cmd->SetMsg(msg);
+        debug_log("create room command, name: " << name
+                << ", passwd: " << passwd);
+
     } while(0);
 
     return parsed;
@@ -118,17 +170,19 @@ InputParser::ParseCreateRoom(char *input, Cmd *cmd)
 bool 
 InputParser::ParseJoinRoom(char *input, Cmd *cmd)
 {
+    return false;
 }
 
 bool 
 InputParser::ParseWhisper(char *input, Cmd *cmd)
 {
-
+    return false;
 }
 
 bool
 InputParser::ParseReply(char *input, Cmd *cmd)
 {
+    return false;
 }
 
 

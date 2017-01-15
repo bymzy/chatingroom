@@ -2,7 +2,10 @@ enalbe logger level and log file count, log file size
 Test logger benchmark with yfs log
 client exit normally
 relogon
-socket close should push drop event to netservice
+**socket close should push drop event to netservice
+
+show rooms info
+join room
 
 v2
 1. multi server on multi machine, one database brocast room message
