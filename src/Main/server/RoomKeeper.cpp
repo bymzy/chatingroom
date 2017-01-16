@@ -291,7 +291,7 @@ RoomKeeper::PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::stri
 }
 
 void
-RoomKeeper::PublishRoomList()
+RoomKeeper::PublishRoomList(uint64_t connId)
 {
     Room *room = NULL;
     User *user = NULL;
@@ -309,12 +309,16 @@ RoomKeeper::PublishRoomList()
     }
     msg.SetLen();
 
-    /* send to all users */
-    iter_id_user ituser = mIdUser.begin();
-    for (;ituser != mIdUser.end(); ++ituser) {
-        user = ituser->second;
-        SendMessage(user->GetId(), msg.Dup());
-    }
+    if (connId != 0) {
+        SendMessage(connId, msg.Dup());
+    } else {
+        /* send to all users */
+        iter_id_user ituser = mIdUser.begin();
+        for (;ituser != mIdUser.end(); ++ituser) {
+            user = ituser->second;
+            SendMessage(user->GetId(), msg.Dup());
+        }
+    } 
 }
 
 User *

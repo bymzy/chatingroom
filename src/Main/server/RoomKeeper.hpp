@@ -45,7 +45,7 @@ public:
 
     void PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::string& msg);
 
-    void PublishRoomList();
+    void PublishRoomList(uint64_t connId = 0);
 
     User * GetUserById(uint64_t userId);
 

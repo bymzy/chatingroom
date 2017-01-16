@@ -46,16 +46,27 @@ public:
          * */
         s2c_create_room_res,
 
-        /* 4 bytes: msg type
-         * string: warn info
-         * */
-        local_warn_msg,
 
         /* 4 bytes: msg type
          * 4 bytes: room count
          * repeated: room info
          * */
         s2c_room_list,
+
+
+
+        /* begin of local msg */
+        local_msg_begin,
+        /* 4 bytes: msg type
+         * string: warn info
+         * */
+        local_warn_msg,
+
+        /* 4 bytes: msg type*/
+        local_list_room,
+
+        /* end of local msg */
+        local_msg_end,
     };
 };
 

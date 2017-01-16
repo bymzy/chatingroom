@@ -57,6 +57,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_room_list:
             HandleUpdateRoomList(msg);
             break;
+        case MsgType::local_list_room:
+            ShowRoomList();
+            break;
     }
 
     delete msg;
@@ -179,41 +182,58 @@ CRClient::HandleDrop(OperContext *ctx)
 void
 CRClient::HandleInput(char *input)
 {
+    /* warning this is done in main thread*/
+
     bool parsed = false;
     Cmd * cmd = new Cmd();
     parsed = mInputParser.ParseInput(input, cmd);
 
-    if (parsed) {
-        if (cmd->IsInvalid()) {
-            debug_log("invalid command " << input);
-            /* invalid command, need to show warn info */
-            mLayout.DisplaySystemMessage(cmd->GetErrStr());
+    do {
+        if (parsed) {
+            if (cmd->IsInvalid()) {
+                debug_log("invalid command " << input);
+                /* invalid command, need to show warn info */
+                mLayout.DisplaySystemMessage(cmd->GetErrStr());
+                break;
+            }  
+
+            debug_log("valid command " << input
+                    << ", local: " << cmd->IsLocalCmd());
+
+            if (cmd->IsLocalCmd()) {
+                /* valid local cmd */
+                OperContext *ctx = new OperContext(OperContext::OP_RECV);
+                ctx->SetMessage(cmd->GetMsg());
+                ctx->SetConnID(mConnId);
+                mNetService.Enqueue(ctx);
+                OperContext::DecRef(ctx);
+
+            } else { 
+                /* valid remote cmd to server */
+                OperContext *ctx = new OperContext(OperContext::OP_SEND);
+                ctx->SetMessage(cmd->GetMsg());
+                ctx->SetConnID(mConnId);
+                mNetService.Enqueue(ctx);
+                OperContext::DecRef(ctx);
+            }
         } else {
-            debug_log("valid command " << input);
-            /* valid send cmd to server */
+            /* is a normal chat message */
             OperContext *ctx = new OperContext(OperContext::OP_SEND);
-            ctx->SetMessage(cmd->GetMsg());
+            Msg *msg = new Msg;
+            (*msg) << MsgType::c2s_publish_chat_msg;
+            (*msg) << mCurrentRoom.GetId();
+            (*msg) << std::string(input);
+            msg->SetLen();
+
+            ctx->SetMessage(msg);
             ctx->SetConnID(mConnId);
             mNetService.Enqueue(ctx);
             OperContext::DecRef(ctx);
+            debug_log("normal chat message " << input
+                    << ", room id: " << mCurrentRoom.GetId());
         }
 
-    } else {
-        /* is a normal chat message */
-        OperContext *ctx = new OperContext(OperContext::OP_SEND);
-        Msg *msg = new Msg;
-        (*msg) << MsgType::c2s_publish_chat_msg;
-        (*msg) << mCurrentRoom.GetId();
-        (*msg) << std::string(input);
-        msg->SetLen();
-
-        ctx->SetMessage(msg);
-        ctx->SetConnID(mConnId);
-        mNetService.Enqueue(ctx);
-        OperContext::DecRef(ctx);
-        debug_log("normal chat message " << input
-                << ", room id: " << mCurrentRoom.GetId());
-    }
+    } while (0);
 
     delete cmd;
     cmd = NULL;
@@ -298,6 +318,19 @@ CRClient::HandleUpdateRoomList(Msg *msg)
     }
 }
 
+void
+CRClient::ShowRoomList()
+{
+    std::stringstream ss;
+    ss << "Total room count: " << mRooms.size();
+    mLayout.DisplaySystemMessage(ss.str());
+    ss.clear();
+
+    iter_id_room iter = mRooms.begin();
+    for (; iter != mRooms.end(); ++iter) {
+        mLayout.DisplaySystemMessage(iter->second->DebugString());
+    }
+}
 
 
 

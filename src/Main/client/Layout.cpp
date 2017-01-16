@@ -136,10 +136,10 @@ Layout::ReceiveMessage(const std::string& from, const std::string& words, bool i
 }
 
 void
-Layout::DisplaySystemMessage(std::string info)
+Layout::DisplaySystemMessage(const std::string& info)
 {
-    info = "system info: " + info;
-    addCDKSwindow(mDisplay, info.c_str(), BOTTOM);
+    std::string text= "</B/31>system info: " + info;
+    addCDKSwindow(mDisplay, text.c_str(), BOTTOM);
 }
 
 

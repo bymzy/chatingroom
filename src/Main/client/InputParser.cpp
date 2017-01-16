@@ -64,8 +64,8 @@ InputParser::ParseCmdMessage(char *input, Cmd *cmd)
         case 'e':
             cmd->SetType(Cmd::CMD_exit);
             break;
-        case 'i':
-            cmd->SetType(Cmd::CMD_info);
+        case 'l':
+            parsed = ParseList(input + 1, cmd);
             break;
         case '\0':
             parsed = false;
@@ -135,8 +135,8 @@ InputParser::ParseCreateRoom(char *input, Cmd *cmd)
         
         passwdlen = passwdend - passwdstart;
 
+        cmd->SetType(Cmd::CMD_create_room);
         if (passwdlen < 4 || passwdlen > 20) {
-            cmd->SetType(Cmd::CMD_create_room);
             cmd->SetErrStr("room passwd at least 4 at most 20 chars length!");
             debug_log("create room command, but invalid passwd: "
                     << (input + passwdstart));
@@ -152,6 +152,7 @@ InputParser::ParseCreateRoom(char *input, Cmd *cmd)
         passwd.assign(input + passwdstart, passwdend - passwdstart);
         
         cmd->SetInvalid(false);
+        cmd->SetLocalCmd(false);
 
         Msg *msg = new Msg;
         (*msg) << MsgType::c2s_create_room;
@@ -184,6 +185,64 @@ InputParser::ParseReply(char *input, Cmd *cmd)
 {
     return false;
 }
+
+bool
+InputParser::ParseList(char *input, Cmd *cmd)
+{
+    bool parsed = false;
+    char *index = input;
+    int targetbegin = 0;
+    int targetend = 0;
+
+    do {
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* check if target is empty */
+        if (*index == 0) {
+            cmd->SetType(Cmd::CMD_null);
+            cmd->SetErrStr("list command with no target");
+            warn_log("list command invalid: " << input);
+            break;
+        }
+
+        targetbegin = index - input;
+        /* get room name */
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        targetend = index - input;
+
+        std::string target;
+        target.assign(input + targetbegin, targetend - targetbegin);
+
+        parsed = true;
+        Msg *msg = NULL;
+        if (target == "room") {
+            cmd->SetType(Cmd::CMD_list_room);
+            msg = new Msg;
+            (*msg) << MsgType::local_list_room;
+            msg->SetLen();
+        } else {
+            cmd->SetType(Cmd::CMD_null);
+            cmd->SetErrStr("list command with invalid target");
+            warn_log("list command invalid:" << target);
+            break;
+        }
+
+        cmd->SetLocalCmd(true);
+        cmd->SetInvalid(false);
+        cmd->SetMsg(msg);
+        debug_log("list command, with target: " << target);
+
+    } while(0);
+
+    return parsed;
+}
+
+
+
 
 
 

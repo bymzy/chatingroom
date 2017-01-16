@@ -98,6 +98,9 @@ Worker::HandleLogon(Msg *msg, std::string ip, unsigned short port,
 
     reply->SetLen();
     SendMessage(connId, reply);
+
+    /* send room list */
+    mRoomKeeper.PublishRoomList(connId);
     return;
 }
 

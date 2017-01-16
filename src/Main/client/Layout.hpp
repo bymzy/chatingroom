@@ -21,7 +21,7 @@ public:
 
     void UpdateUserListWithStringVec(const std::vector<std::string>& vec);
     void ReceiveMessage(const std::string& from , const std::string& words, bool isSelf);
-    void DisplaySystemMessage(std::string info);
+    void DisplaySystemMessage(const std::string& info);
 
 public:
     CDKSCREEN *mScreen;

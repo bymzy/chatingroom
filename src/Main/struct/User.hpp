@@ -10,6 +10,7 @@
 #define HALL_ID 0
 #define HALL_NAME "HALL"
 #define INVALID_ROOM_ID (uint32_t(-1))
+#define INVALID_USER_ID (uint64_t(-1))
 
 class User {
 public:

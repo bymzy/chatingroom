@@ -4,7 +4,6 @@ client exit normally
 relogon
 **socket close should push drop event to netservice
 
-show rooms info
 join room
 
 v2

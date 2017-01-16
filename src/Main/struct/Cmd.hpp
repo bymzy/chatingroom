@@ -16,7 +16,8 @@ public:
         CMD_exit,
 
         /* local command */
-        CMD_info,
+        CMD_list_room,
+        CMD_list_user,
         CMD_help,
 
         CMD_chat,
@@ -24,7 +25,7 @@ public:
     }CmdType;
 
 public:
-    Cmd(): mType(CMD_null), mMsg(NULL), mInvalid(true)
+    Cmd(): mType(CMD_null), mMsg(NULL), mInvalid(true), mLocalCmd(true)
     {
     }
     ~Cmd()
@@ -72,12 +73,23 @@ public:
         return mErrStr;
     }
 
+    void SetLocalCmd(bool local)
+    {
+        mLocalCmd = local;
+    }
+
+    bool IsLocalCmd()
+    {
+        return mLocalCmd;
+    }
+
 private:
     CmdType mType;
     Msg *mMsg;
     /* command invalid reason */
     std::string mErrStr;
     bool mInvalid;
+    bool mLocalCmd;
 };
 
 

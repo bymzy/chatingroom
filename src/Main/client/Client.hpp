@@ -52,7 +52,7 @@ private:
     void ReceiveLocalWarnMessage(Msg *msg);
     void HandleCreateRoomRes(Msg *msg);
     void HandleUpdateRoomList(Msg *msg);
-    
+    void ShowRoomList();
 
 private:
     /* server ip and port*/

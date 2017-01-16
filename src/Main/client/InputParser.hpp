@@ -10,7 +10,7 @@
  * /q            exit room, exit HALL--> exit program 
  * /e         exit program
  * /i         show current info
- * /l [room,user] list room and user info
+ * /l [room,user] list room or user info
  * */
 
 #ifndef __CLIENT_INPUT_PARSER_HPP__
@@ -36,6 +36,7 @@ private:
     bool ParseJoinRoom(char *input, Cmd *cmd);
     bool ParseWhisper(char *input, Cmd *cmd);
     bool ParseReply(char *input, Cmd *cmd);
+    bool ParseList(char *input, Cmd *cmd);
 };
 
 #endif
