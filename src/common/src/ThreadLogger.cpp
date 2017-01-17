@@ -24,7 +24,7 @@ ThreadLogger::Init()
     temp = localtime(&now);
     strftime(outstr, sizeof(outstr), "%Y-%m-%d_%H-%M-%S", temp);
 
-    std::string logFile= LogDir + outstr + "-" + mFileName + ".log";
+    std::string logFile= LogDir + mFileName  + "-" + outstr + ".log";
 
     /* open log file */
     mFileFd = open(logFile.c_str(), O_WRONLY | O_CREAT, 0777);

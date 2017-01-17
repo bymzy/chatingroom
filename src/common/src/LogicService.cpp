@@ -14,8 +14,8 @@ LogicService::Run()
 
     err = Init();
     if (0 != err) {
-        error_log("LogicService init failed, name: " << mName
-                << ", error: " << err);
+        std::cerr << "LogicService init failed, name: " << mName
+                << ", error: " << err;
         return;
     }
 
@@ -59,7 +59,7 @@ LogicService::Run()
         ctxVec.clear();
     }
 
-    //Finit();
+    Finit();
     std::cout << "logic service exit! vec size: " <<  ctxVec.size() <<",cap: "<< ctxVec.capacity() << std::endl;
 }
 

@@ -17,7 +17,7 @@ void WriteLog(std::string data);
 #define debug_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [DEBUG] ["\
+        ss << std::boolalpha << data << " [DEBUG] ["\
            << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
@@ -25,7 +25,7 @@ void WriteLog(std::string data);
 #define warn_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [WARN] ["\
+        ss << std::boolalpha << data << " [WARN] ["\
            << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
@@ -33,7 +33,7 @@ void WriteLog(std::string data);
 #define error_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [ERROR] ["\
+        ss << std::boolalpha << data << " [ERROR] ["\
            << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
@@ -41,7 +41,7 @@ void WriteLog(std::string data);
 #define trace_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [TRACE] ["\
+        ss << std::boolalpha << data << " [TRACE] ["\
            << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
@@ -49,7 +49,7 @@ void WriteLog(std::string data);
 #define info_log(data)\
     {\
         std::stringstream ss;\
-        ss << data << " [INFO] ["\
+        ss << std::boolalpha << data << " [INFO] ["\
            << __FILE__ << ":"<< __LINE__<< ":" << __FUNCTION__ << "]\n";\
         WriteLog(ss.str());\
 }\
