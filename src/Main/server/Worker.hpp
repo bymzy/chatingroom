@@ -30,6 +30,7 @@ private:
     void HandleLogon(Msg*msg, std::string ip, unsigned short port, uint64_t connId);
     void PublishChatMessage(Msg *msg, uint64_t userId);
     void HandleCreateRoom(Msg *msg, uint64_t connId);
+    void HandleJoinRoom(Msg *msg, uint64_t connId);
 
 public:
     LogicService *mNet;

@@ -12,6 +12,7 @@ public:
         room_passwd_not_match,
         user_already_in_this_room,
         room_with_same_name_already_exists,
+        user_not_exist,
     };
 };
 

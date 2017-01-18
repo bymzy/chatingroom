@@ -171,7 +171,87 @@ InputParser::ParseCreateRoom(char *input, Cmd *cmd)
 bool 
 InputParser::ParseJoinRoom(char *input, Cmd *cmd)
 {
-    return false;
+    bool parsed = false;
+    char *index = input;
+
+    int roomlen = 0;
+    int roombegin = 0;
+    int roomend = 0;
+    int passwdstart = 0;
+    int passwdend = 0;
+    int passwdlen = 0;
+
+    do {
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* check if target is empty */
+        if (*index == 0) {
+            cmd->SetType(Cmd::CMD_null);
+            cmd->SetErrStr("list command with no target");
+            warn_log("list command invalid: " << input);
+            break;
+        }
+
+        roombegin = index - input;
+        /* get room name */
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        roomend = index - input;
+        roomlen = roomend - roombegin;
+
+        std::string roomName;
+        roomName.assign(input + roombegin, roomend - roombegin);
+
+        if (roomlen < 4 || roomlen > 20) {
+            cmd->SetType(Cmd::CMD_null);
+            cmd->SetErrStr("join room ,but invalid room len!");
+            debug_log("join room, but room name len invalid, name: " << input);
+            break;
+        }
+
+        /* get passwd */
+        /* skip all space */
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* get room passwd */
+        passwdstart = index - input; 
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        passwdend = index - input;
+        passwdlen = passwdend - passwdstart;
+
+        if (passwdlen < 4 || passwdlen > 20) {
+            cmd->SetErrStr("room passwd at least 4 at most 20 chars length!");
+            debug_log("join room command, but invalid passwd: "
+                    << (input + passwdstart));
+            break;
+        }
+
+        std::string passwd;
+        passwd.assign(input + passwdstart , passwdend - passwdstart);
+
+        parsed = true;
+        Msg *msg = NULL;
+        msg = new Msg;
+        (*msg) << MsgType::c2s_join_room;
+        (*msg) << roomName;
+        (*msg) << passwd;
+        msg->SetLen();
+
+        cmd->SetLocalCmd(false);
+        cmd->SetInvalid(false);
+        cmd->SetMsg(msg);
+        debug_log("join room command, with name: " << roomName);
+        
+    } while(0);
+
+    return parsed;
 }
 
 bool 

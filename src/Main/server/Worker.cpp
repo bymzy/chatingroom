@@ -64,6 +64,9 @@ Worker::RecvMessage(OperContext *ctx)
         case MsgType::c2s_create_room:
             HandleCreateRoom(msg, connId);
             break;
+        case MsgType::c2s_join_room:
+            HandleJoinRoom(msg ,connId);
+            break;
         default:
             break;
     }
@@ -159,6 +162,30 @@ Worker::HandleCreateRoom(Msg *msg, uint64_t connId)
 
     /* publish room list */
     mRoomKeeper.PublishRoomList();
+}
+
+void
+Worker::HandleJoinRoom(Msg *msg, uint64_t connId)
+{
+    int err = 0;
+    std::string roomName;
+    std::string passwd;
+    std::string errstr;
+    Msg *reply = NULL;
+
+    (*msg) >> roomName;
+    (*msg) >> passwd;
+
+    err = mRoomKeeper.HandleJoinRoom(roomName, passwd, connId, errstr);
+
+    reply = new Msg;
+    (*reply) << MsgType::s2c_join_room_res;
+    (*reply) << err;
+    (*reply) << errstr;
+    (*reply) << roomName;
+    reply->SetLen();
+
+    SendMessage(connId, reply);
 }
 
 

@@ -29,13 +29,19 @@ public:
             const uint64_t& userId, std::string& errstr, User **user);
 
     /* try to add user to room */
-    int Join(const std::string& roomName, const uint64_t& userId,
-            const std::string& passwd, std::string errstr);
+    int JoinRoom(const std::string& roomName, const uint64_t& userId,
+            const std::string& passwd, std::string& errstr);
     
     void GetRoomInfoMsg(uint32_t roomId, Msg* msg);
 
     int CreateRoom(const std::string& name, const std::string& passwd,
             std::string& errstr);
+
+    int LeaveRoom(const std::string& name, uint64_t userId, 
+            std::string& errstr);
+
+    int HandleJoinRoom(const std::string& roomName, const std::string& passwd,
+            uint64_t userId, std::string& errstr);
 
     void HandleDrop(uint64_t userId);
 
@@ -46,6 +52,7 @@ public:
     void PublishRoomMessage(uint32_t roomId, uint64_t userId, const std::string& msg);
 
     void PublishRoomList(uint64_t connId = 0);
+
 
     User * GetUserById(uint64_t userId);
 

@@ -60,6 +60,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::local_list_room:
             ShowRoomList();
             break;
+        case MsgType::s2c_join_room_res:
+            HandleJoinRoomRes(msg);
+            break;
     }
 
     delete msg;
@@ -133,6 +136,7 @@ CRClient::ParseRoomInfo(Msg *msg)
     mOnlines.clear();
 
     mCurrentRoom.Decode(msg);
+    mUser.SetRoomId(mCurrentRoom.GetId());
     trace_log("room info: " << mCurrentRoom.DebugString());
 
     (*msg) >> count;
@@ -332,8 +336,29 @@ CRClient::ShowRoomList()
     }
 }
 
+void
+CRClient::HandleJoinRoomRes(Msg *msg)
+{
+    int err = 0;
+    std::string errstr;
+    std::stringstream ss;
+    std::string roomName;
 
+    (*msg) >> err;
+    (*msg) >> errstr;
+    (*msg) >> roomName;
 
+    debug_log("handle join room res, error: " << err
+            << ", errstr: " << errstr);
+
+    if (err != 0) {
+        ss << "join room " << roomName << " failed: " <<  errstr;
+        mLayout.DisplaySystemMessage(ss.str());
+    } else {
+        ss << "join room "<< roomName << " success!";
+        mLayout.DisplaySystemMessage(ss.str());
+    }
+}
 
 
 

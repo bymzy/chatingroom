@@ -46,17 +46,29 @@ public:
          * */
         s2c_create_room_res,
 
-
         /* 4 bytes: msg type
          * 4 bytes: room count
          * repeated: room info
          * */
         s2c_room_list,
 
+        /* 4 bytes: msg type
+         * string: room name
+         * string: passwd
+         * */
+        c2s_join_room,
+
+        /* 4 bytes: msg type
+         * 4 bytes: errno
+         * 4 bytes: errstr
+         * */
+        s2c_join_room_res,
 
 
+        /**/
         /* begin of local msg */
         local_msg_begin,
+
         /* 4 bytes: msg type
          * string: warn info
          * */

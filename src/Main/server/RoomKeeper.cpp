@@ -42,7 +42,7 @@ RoomKeeper::HandleLogon(const std::string& name, const std::string& ip,
         *retuser = user;
 
         /* join hall */
-        err = Join(HALL_NAME, userId, "", errstr);
+        err = JoinRoom(HALL_NAME, userId, "", errstr);
         assert(err == 0);
 
     } while(0);
@@ -51,8 +51,8 @@ RoomKeeper::HandleLogon(const std::string& name, const std::string& ip,
 }
 
 int 
-RoomKeeper::Join(const std::string& roomName, const uint64_t& userId,
-        const std::string& passwd, std::string errstr)
+RoomKeeper::JoinRoom(const std::string& roomName, const uint64_t& userId,
+        const std::string& passwd, std::string& errstr)
 {
     int err = 0;
     std::map<std::string, uint32_t>::iterator room_name_id_iter;
@@ -341,6 +341,83 @@ RoomKeeper::GetRoomById(uint32_t roomId)
     return index->second;
 }
 
+int
+RoomKeeper::HandleJoinRoom(const std::string& roomName, const std::string& passwd,
+        uint64_t userId, std::string& errstr)
+{
+    int err = 0;
+    /* check room exists */
+    iter_id_user userIter;
+    iter_id_room roomIter;
+    uint32_t oldRoomId;
+    User *user = NULL;
+    Room *oldRoom = NULL;
+
+    do {
+        /* get where user used to belong to */
+        userIter = mIdUser.find(userId);
+        if (userIter == mIdUser.end()) {
+            err = Err::user_not_exist;
+            errstr = "join room ,but user not exist!";
+            warn_log("join room ,but user not exist!");
+            break;
+        }
+        user = userIter->second;
+
+        oldRoomId = user->GetRoomId();
+        roomIter = mIdRoom.find(oldRoomId);
+        assert(roomIter != mIdRoom.end());
+        oldRoom = roomIter->second;
+
+        /* join new room */
+        err = JoinRoom(roomName, userId, passwd, errstr);
+        if (err != 0) {
+            break;
+        }
+
+        /* leave old room */
+        err = LeaveRoom(oldRoom->GetName(), userId, errstr);
+        assert(err == 0);
+
+    } while(0);
+
+    return err;
+}
+
+int
+RoomKeeper::LeaveRoom(const std::string& roomName, uint64_t userId, 
+        std::string& errstr)
+{
+    int err = 0;
+    std::map<std::string, uint32_t>::iterator room_name_id_iter;
+    uint32_t roomId;
+    iter_id_room id_room_iter;
+    Room *room = NULL;
+
+    do {
+        /* check if room exists*/
+        room_name_id_iter = mRoomNames.find(roomName);
+        if (room_name_id_iter == mRoomNames.end()) {
+            warn_log("room" << roomName << " not exist!");
+            err = Err::room_not_exist;
+            errstr = "room not exists!";
+            break;
+        }
+
+        roomId = room_name_id_iter->second;
+        id_room_iter = mIdRoom.find(roomId);
+        assert(id_room_iter != mIdRoom.end());
+        room = id_room_iter->second;
+
+        room->HandleUserLeave(userId);
+        PublishRoomInfo(room);
+
+        debug_log("leave room, room name: " << roomName
+                << ", user id: " << userId);
+    } while(0);
+
+    return err;
+}
 
 
 
