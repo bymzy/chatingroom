@@ -32,6 +32,9 @@ int RunAsClient()
 
     client.StartWindow();
 
+    /* stop client */
+    client.Stop();
+
 OUT:
     return err;
 }
@@ -67,6 +70,7 @@ int main(int argc, char *argv[])
         err = RunAsClient();
     }
 
+    g_logger->Stop();
 EXIT:
     return err;
 }

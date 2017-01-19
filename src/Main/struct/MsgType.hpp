@@ -77,6 +77,9 @@ public:
         /* 4 bytes: msg type*/
         local_list_room,
 
+        /* 4 bytes: msg type*/
+        local_leave_room,
+
         /* end of local msg */
         local_msg_end,
     };

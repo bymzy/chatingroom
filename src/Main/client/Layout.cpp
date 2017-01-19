@@ -71,7 +71,7 @@ Layout::Start()
     refreshCDKScreen(mScreen);
     bindCDKObject(vENTRY, mInput, KEY_TAB, entryCB, mInput);
     
-    while(!exit) {
+    while(!exit && mClient->IsCdkRunning()) {
         if (logon) {
             mClient->SendLogon();
             logon = false;
@@ -104,6 +104,8 @@ Layout::Start()
     destroyCDKSwindow(mList);
     destroyCDKScreen(mScreen);
     endCDK();
+
+    mClient->Stop();
 }
 
 void

@@ -16,7 +16,7 @@ public:
         LogicService("CRClient"),
         mIP(ip), mPort(port), mUserName(user),
         mNetService(this, ""), mLayout(this),
-        mCurrentRoom(INVALID_ROOM_ID, "", ""), mConnId(0)
+        mCurrentRoom(INVALID_ROOM_ID, "", ""), mConnId(0), mCdkRunning(true)
     {
     }
 
@@ -36,6 +36,14 @@ public:
     /* send logon info to server */ 
     void SendLogon();
 
+    /* send message */
+    void SendMessage(Msg *msg);
+
+    bool IsCdkRunning() {
+        return mCdkRunning;
+    }
+
+
 private:
     virtual int Init();
     virtual int Finit();
@@ -54,6 +62,8 @@ private:
     void HandleUpdateRoomList(Msg *msg);
     void HandleJoinRoomRes(Msg *msg);
     void ShowRoomList();
+    void HandleLeaveRoom();
+
 
 private:
     /* server ip and port*/
@@ -74,6 +84,9 @@ private:
     /* connid to server */
     uint64_t mConnId;
     InputParser mInputParser;
+
+    /* whether cdk need get input */
+    bool mCdkRunning;
 };
 
 

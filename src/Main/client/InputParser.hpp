@@ -37,6 +37,7 @@ private:
     bool ParseWhisper(char *input, Cmd *cmd);
     bool ParseReply(char *input, Cmd *cmd);
     bool ParseList(char *input, Cmd *cmd);
+    bool ParseLeaveRoom(char *input, Cmd *cmd);
 };
 
 #endif

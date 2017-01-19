@@ -59,7 +59,7 @@ InputParser::ParseCmdMessage(char *input, Cmd *cmd)
             parsed = ParseReply(input + 1, cmd);
             break;
         case 'q':
-            cmd->SetType(Cmd::CMD_exit);
+            parsed = ParseLeaveRoom(input + 1, cmd);
             break;
         case 'e':
             cmd->SetType(Cmd::CMD_exit);
@@ -315,6 +315,36 @@ InputParser::ParseList(char *input, Cmd *cmd)
         cmd->SetInvalid(false);
         cmd->SetMsg(msg);
         debug_log("list command, with target: " << target);
+
+    } while(0);
+
+    return parsed;
+}
+
+bool
+InputParser::ParseLeaveRoom(char *input, Cmd *cmd)
+{
+    bool parsed = false;
+    char *index = input;
+
+    do {
+        if (*index != ' ' && *index != 0) {
+            cmd->SetType(Cmd::CMD_null);
+            warn_log("parse leave room command failed, input: " << input);
+            break;
+        }
+
+        parsed = true;
+        Msg *msg = new Msg;
+        cmd->SetType(Cmd::CMD_leave_room);
+        cmd->SetInvalid(false);
+        cmd->SetLocalCmd(true);
+
+        (*msg) << MsgType::local_leave_room;
+        msg->SetLen();
+        cmd->SetMsg(msg);
+
+        debug_log("leave room command parsed succeed!");
 
     } while(0);
 

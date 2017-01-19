@@ -4,7 +4,7 @@ client exit normally
 relogon
 **socket close should push drop event to netservice
 
-leave room
+client exit
 
 v2
 1. multi server on multi machine, one database brocast room message

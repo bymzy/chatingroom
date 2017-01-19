@@ -57,11 +57,14 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_room_list:
             HandleUpdateRoomList(msg);
             break;
+        case MsgType::s2c_join_room_res:
+            HandleJoinRoomRes(msg);
+            break;
         case MsgType::local_list_room:
             ShowRoomList();
             break;
-        case MsgType::s2c_join_room_res:
-            HandleJoinRoomRes(msg);
+        case MsgType::local_leave_room:
+            HandleLeaveRoom();
             break;
     }
 
@@ -97,6 +100,9 @@ CRClient::Process(OperContext *ctx)
 int 
 CRClient::Finit()
 {
+    mNetService.Stop();
+    debug_log("CRClient finit!");
+
     return 0;
 }
 
@@ -214,25 +220,17 @@ CRClient::HandleInput(char *input)
 
             } else { 
                 /* valid remote cmd to server */
-                OperContext *ctx = new OperContext(OperContext::OP_SEND);
-                ctx->SetMessage(cmd->GetMsg());
-                ctx->SetConnID(mConnId);
-                mNetService.Enqueue(ctx);
-                OperContext::DecRef(ctx);
+                SendMessage(cmd->GetMsg());
             }
         } else {
             /* is a normal chat message */
-            OperContext *ctx = new OperContext(OperContext::OP_SEND);
             Msg *msg = new Msg;
             (*msg) << MsgType::c2s_publish_chat_msg;
             (*msg) << mCurrentRoom.GetId();
             (*msg) << std::string(input);
             msg->SetLen();
 
-            ctx->SetMessage(msg);
-            ctx->SetConnID(mConnId);
-            mNetService.Enqueue(ctx);
-            OperContext::DecRef(ctx);
+            SendMessage(msg);
             debug_log("normal chat message " << input
                     << ", room id: " << mCurrentRoom.GetId());
         }
@@ -360,5 +358,34 @@ CRClient::HandleJoinRoomRes(Msg *msg)
     }
 }
 
+void
+CRClient::HandleLeaveRoom()
+{
+    /* if current is in HALL, then exist client
+     * else join HALL
+     * */
 
+    if (mCurrentRoom.GetName() == HALL_NAME) {
+        mCdkRunning = false;
+        info_log("levaving CR client!");
+    } else {
+        /* join HALL */
+        Msg *msg = new Msg;
+        (*msg) << MsgType::c2s_join_room;
+        (*msg) << HALL_NAME;
+        (*msg) << "";
+        msg->SetLen();
+        SendMessage(msg);
+    }
+}
+
+void
+CRClient::SendMessage(Msg *msg)
+{
+    OperContext *ctx = new OperContext(OperContext::OP_SEND);
+    ctx->SetMessage(msg);
+    ctx->SetConnID(mConnId);
+    mNetService.Enqueue(ctx);
+    OperContext::DecRef(ctx);
+}
 

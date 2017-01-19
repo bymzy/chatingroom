@@ -28,15 +28,6 @@ LogicService::Run()
         }
 
         /* now there is something in queure try process it */
-#if 0
-        while (!mQueue.empty()) {
-            ctx = mQueue.front();
-            ctxVec.push_back(ctx);
-            mQueue.pop_front();
-            ctx = NULL;
-        }
-#endif
-
         ctxVec.assign(mQueue.begin(), mQueue.end());
         mQueue.clear();
 

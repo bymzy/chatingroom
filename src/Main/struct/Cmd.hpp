@@ -12,7 +12,7 @@ public:
         CMD_create_room,
         CMD_join_room,
         CMD_whisper,
-        CMD_quit,
+        CMD_leave_room,
         CMD_exit,
 
         /* local command */
