@@ -99,13 +99,13 @@ Layout::Start()
         setCDKEntryValue(mInput, "");
     }
 
+    mClient->Stop();
+
     destroyCDKEntry(mInput);
     destroyCDKSwindow(mDisplay);
     destroyCDKSwindow(mList);
     destroyCDKScreen(mScreen);
     endCDK();
-
-    mClient->Stop();
 }
 
 void

@@ -32,9 +32,6 @@ int RunAsClient()
 
     client.StartWindow();
 
-    /* stop client */
-    client.Stop();
-
 OUT:
     return err;
 }

@@ -65,6 +65,20 @@ public:
         s2c_join_room_res,
 
 
+        /* 4 bytes: msg type
+         * string: from user
+         * string: to user
+         * string: words
+         * */
+        c2s_whisper_msg,
+
+        /* 4 bytes: msg type
+         * string: from user
+         * string: to user
+         * string: words
+         * */
+        s2c_whisper_msg,
+
         /**/
         /* begin of local msg */
         local_msg_begin,

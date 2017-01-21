@@ -58,6 +58,8 @@ public:
 
     Room * GetRoomById(uint32_t roomId);
 
+    User * GetUserByName(std::string name);
+
 private:
     void SetUserRoomId(uint64_t userId, uint32_t roomId);
 

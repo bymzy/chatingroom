@@ -331,6 +331,24 @@ RoomKeeper::GetUserById(uint64_t userId)
     return index->second;
 }
 
+User *
+RoomKeeper::GetUserByName(std::string name)
+{
+    std::map<std::string ,uint64_t>::iterator iter;
+    iter = mUserNames.find(name);
+    if (iter == mUserNames.end()) {
+        return NULL;
+    }
+
+    iter_id_user iter2;
+    iter2 = mIdUser.find(iter->second);
+    if (iter2 == mIdUser.end()) {
+        return NULL;
+    }
+
+    return iter2->second;
+}
+
 Room *
 RoomKeeper::GetRoomById(uint32_t roomId)
 {

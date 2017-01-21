@@ -67,6 +67,9 @@ Worker::RecvMessage(OperContext *ctx)
         case MsgType::c2s_join_room:
             HandleJoinRoom(msg ,connId);
             break;
+        case MsgType::c2s_whisper_msg:
+            HandleWhisperMsg(msg, connId);
+            break;
         default:
             break;
     }
@@ -188,6 +191,31 @@ Worker::HandleJoinRoom(Msg *msg, uint64_t connId)
     SendMessage(connId, reply);
 }
 
+void
+Worker::HandleWhisperMsg(Msg *msg, uint64_t connId)
+{
+    std::string from;
+    std::string to;
+    std::string words;
+
+    (*msg) >> to;
+    (*msg) >> words;
+
+    trace_log("whisper msg, from: " << from
+            << ", to: " << to
+            << ", words: " << words);
+
+    User *fromUser = mRoomKeeper.GetUserById(connId);
+    User *toUser = mRoomKeeper.GetUserByName(to);
+
+    Msg *reply = new Msg;
+    (*msg) << MsgType::s2c_whisper_msg;
+    (*msg) << fromUser->GetName();
+    (*msg) << words;
+    reply->SetLen();
+
+    SendMessage(toUser->GetId(), reply);
+}
 
 
 

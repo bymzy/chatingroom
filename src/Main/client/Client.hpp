@@ -63,6 +63,7 @@ private:
     void HandleJoinRoomRes(Msg *msg);
     void ShowRoomList();
     void HandleLeaveRoom();
+    void HandleWhisperMessage(Msg *msg);
 
 
 private:

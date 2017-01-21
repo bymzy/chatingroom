@@ -257,7 +257,67 @@ InputParser::ParseJoinRoom(char *input, Cmd *cmd)
 bool 
 InputParser::ParseWhisper(char *input, Cmd *cmd)
 {
-    return false;
+    bool parsed = false;
+    char *index = input;
+
+    std::string target;
+    int targetbegin = 0;
+    int targetend = 0;
+
+    std::string words;
+    int wordsbegin = 0;
+    int wordsend = 0;
+
+    do {
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* check if target is empty */
+        if (*index == 0) {
+            cmd->SetType(Cmd::CMD_null);
+            cmd->SetErrStr("list command with no target");
+            warn_log("list command invalid: " << input);
+            break;
+        }
+
+        targetbegin = index - input;
+        /* get user name */
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        targetend = index - input;
+
+        target.assign(input + targetbegin, targetend - targetbegin);
+
+        while (*index == ' ') {
+            ++index;
+        }
+
+        /* get words */
+        wordsbegin = index - input; 
+        while (*index != ' ' && *index != 0) {
+            ++index;
+        }
+        wordsend = index - input;
+        words.assign(index + wordsbegin, wordsend - wordsbegin);
+
+
+        parsed = true;
+        Msg *msg = new Msg;
+        (*msg) << MsgType::c2s_whisper_msg;
+        (*msg) << target;
+        (*msg) << words;
+        msg->SetLen();
+
+        cmd->SetLocalCmd(false);
+        cmd->SetInvalid(false);
+        cmd->SetMsg(msg);
+
+        debug_log("whisper command, target: " << target
+                << ", words: " << words);
+    } while(0);
+    return parsed;
 }
 
 bool

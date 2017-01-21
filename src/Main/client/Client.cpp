@@ -66,6 +66,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::local_leave_room:
             HandleLeaveRoom();
             break;
+        case MsgType::s2c_whisper_msg:
+            HandleWhisperMessage(msg);
+            break;
     }
 
     delete msg;
@@ -211,6 +214,12 @@ CRClient::HandleInput(char *input)
                     << ", local: " << cmd->IsLocalCmd());
 
             if (cmd->IsLocalCmd()) {
+                if (cmd->GetType() == Cmd::CMD_leave_room 
+                        && mCurrentRoom.GetName() == HALL_NAME) {
+                    mCdkRunning = false;
+                    break;
+                }
+
                 /* valid local cmd */
                 OperContext *ctx = new OperContext(OperContext::OP_RECV);
                 ctx->SetMessage(cmd->GetMsg());
@@ -356,6 +365,24 @@ CRClient::HandleJoinRoomRes(Msg *msg)
         ss << "join room "<< roomName << " success!";
         mLayout.DisplaySystemMessage(ss.str());
     }
+}
+
+void
+CRClient::HandleWhisperMessage(Msg *msg)
+{
+    std::string from, words;
+    std::stringstream ss;
+
+    (*msg) >> from;
+    (*msg) >> words;
+
+    debug_log("handle whisper message from: " << from
+            << ", words: " << words);
+
+    ss << " whisper from " << from
+        << ": " << words;
+
+    mLayout.DisplaySystemMessage(ss.str());
 }
 
 void
