@@ -79,6 +79,12 @@ public:
          * */
         s2c_whisper_msg,
 
+        /* 4 bytes: msg type
+         * string: whisper to
+         * string: reason
+         * */
+        s2c_whisper_msg_failed,
+
         /**/
         /* begin of local msg */
         local_msg_begin,

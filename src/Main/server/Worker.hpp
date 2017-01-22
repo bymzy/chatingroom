@@ -32,6 +32,10 @@ private:
     void HandleCreateRoom(Msg *msg, uint64_t connId);
     void HandleJoinRoom(Msg *msg, uint64_t connId);
     void HandleWhisperMsg(Msg *msg, uint64_t connId);
+    
+    /* send whipser failed msg res to client */
+    void SendWhisperFailed(uint64_t connId, const std::string& to, 
+            const std::string& reason);
 
 public:
     LogicService *mNet;

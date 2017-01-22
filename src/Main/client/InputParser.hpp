@@ -6,7 +6,6 @@
  * /c room       create room 
  * /j room       join room    
  * /w username msg whisper to user 
- * /r username msg reply to user
  * /q            exit room, exit HALL--> exit program 
  * /e         exit program
  * /i         show current info

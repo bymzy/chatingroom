@@ -69,6 +69,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_whisper_msg:
             HandleWhisperMessage(msg);
             break;
+        case MsgType::s2c_whisper_msg_failed:
+            HandleWhisperFailed(msg);
+            break;
     }
 
     delete msg;
@@ -214,9 +217,15 @@ CRClient::HandleInput(char *input)
                     << ", local: " << cmd->IsLocalCmd());
 
             if (cmd->IsLocalCmd()) {
-                if (cmd->GetType() == Cmd::CMD_leave_room 
-                        && mCurrentRoom.GetName() == HALL_NAME) {
+                if ((cmd->GetType() == Cmd::CMD_leave_room 
+                        && mCurrentRoom.GetName() == HALL_NAME) ||
+                        cmd->GetType() == Cmd::CMD_exit) {
                     mCdkRunning = false;
+                    break;
+                }
+
+                if (cmd->GetType() == Cmd::CMD_help) {
+                    ShowHelpInfo();
                     break;
                 }
 
@@ -415,4 +424,35 @@ CRClient::SendMessage(Msg *msg)
     mNetService.Enqueue(ctx);
     OperContext::DecRef(ctx);
 }
+
+void
+CRClient::HandleWhisperFailed(Msg *msg)
+{
+    std::string to;
+    std::string reason;
+    std::stringstream ss;
+
+    (*msg) >> to;
+    (*msg) >> reason;
+
+    ss << "send whisper to " << to << " failed, reason: " << reason;
+
+    mLayout.DisplaySystemMessage(ss.str());
+}
+
+void
+CRClient::ShowHelpInfo()
+{
+    mLayout.DisplaySystemMessage("CRClient currently support this commands");
+    mLayout.DisplaySystemMessage(" command list:");
+    mLayout.DisplaySystemMessage(" /h            show help info\n");
+    mLayout.DisplaySystemMessage(" /c room       create room");
+    mLayout.DisplaySystemMessage(" /j room       join room\n");    
+    mLayout.DisplaySystemMessage(" /w username msg whisper to user");
+    mLayout.DisplaySystemMessage(" /q            exit room, exit HALL--> exit program");
+    mLayout.DisplaySystemMessage(" /e         exit program");
+    mLayout.DisplaySystemMessage(" /i         show current info");
+    mLayout.DisplaySystemMessage(" /l [room,user] list room or user info");
+}
+
 

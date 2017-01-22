@@ -207,15 +207,29 @@ Worker::HandleWhisperMsg(Msg *msg, uint64_t connId)
 
     User *fromUser = mRoomKeeper.GetUserById(connId);
     User *toUser = mRoomKeeper.GetUserByName(to);
+    if (toUser == NULL) {
+        return SendWhisperFailed(connId, to, "user not exists!");
+    }
 
     Msg *reply = new Msg;
-    (*msg) << MsgType::s2c_whisper_msg;
-    (*msg) << fromUser->GetName();
-    (*msg) << words;
+    (*reply) << MsgType::s2c_whisper_msg;
+    (*reply) << fromUser->GetName();
+    (*reply) << words;
     reply->SetLen();
 
     SendMessage(toUser->GetId(), reply);
 }
 
+void
+Worker::SendWhisperFailed(uint64_t connId, const std::string& to,  const std::string& reason)
+{
+    Msg *reply = new Msg;
+    (*reply) << MsgType::s2c_whisper_msg_failed;
+    (*reply) << to;
+    (*reply) << reason;
+    reply->SetLen();
+
+    SendMessage(connId, reply);
+}
 
 

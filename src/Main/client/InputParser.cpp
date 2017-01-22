@@ -45,6 +45,7 @@ InputParser::ParseCmdMessage(char *input, Cmd *cmd)
     {
         case 'h':
             cmd->SetType(Cmd::CMD_help);
+            cmd->SetInvalid(false);
             break;
         case 'c':
             parsed = ParseCreateRoom(input + 1, cmd);
@@ -63,6 +64,7 @@ InputParser::ParseCmdMessage(char *input, Cmd *cmd)
             break;
         case 'e':
             cmd->SetType(Cmd::CMD_exit);
+            cmd->SetInvalid(false);
             break;
         case 'l':
             parsed = ParseList(input + 1, cmd);
@@ -296,11 +298,11 @@ InputParser::ParseWhisper(char *input, Cmd *cmd)
 
         /* get words */
         wordsbegin = index - input; 
-        while (*index != ' ' && *index != 0) {
+        while (*index != 0) {
             ++index;
         }
         wordsend = index - input;
-        words.assign(index + wordsbegin, wordsend - wordsbegin);
+        words.assign(input + wordsbegin, wordsend - wordsbegin);
 
 
         parsed = true;
