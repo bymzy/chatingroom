@@ -1,5 +1,5 @@
 # Desc
-this is a chatting room just for fun by mzy.
+This is a chatting room just for fun by mzy.
 
 # Usage
 ```
@@ -18,6 +18,11 @@ options:
     run as client, you should specify the server ip, port and user name 
     client run with a CDK windows, you may input /h for help info
 ```
+# Depend
+1. cdk
+2. ncurses
+3. libevent
+
 # Feature
 1. widnow with cdk
 2. room support
