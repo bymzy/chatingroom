@@ -1,5 +1,5 @@
 # Desc
-This is a chatting room just for fun by mzy.
+This is a chatting room by mzy.
 
 # Usage
 ```
@@ -25,8 +25,9 @@ options:
 
 # Feature
 1. widnow with cdk
-2. room support
+2. create room support
 3. whisper message support
+4. user info
 
 
 
