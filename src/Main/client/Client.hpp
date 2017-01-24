@@ -65,6 +65,7 @@ private:
     void HandleLeaveRoom();
     void HandleWhisperMessage(Msg *msg);
     void HandleWhisperFailed(Msg *msg);
+    void HandleLocalWhisperMsg(Msg *msg);
     void ShowHelpInfo();
 
 
