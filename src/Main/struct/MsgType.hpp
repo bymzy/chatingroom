@@ -100,6 +100,12 @@ public:
         /* 4 bytes: msg type*/
         local_leave_room,
 
+        /* 4 bytes: msg type
+         * string: to user
+         * string: words
+         * */
+        local_whisper_msg,
+
         /* end of local msg */
         local_msg_end,
     };

@@ -72,6 +72,9 @@ CRClient::RecvMessage(OperContext *ctx)
         case MsgType::s2c_whisper_msg_failed:
             HandleWhisperFailed(msg);
             break;
+        case MsgType::local_whisper_msg:
+            HandleLocalWhisperMsg(msg);
+            break;
     }
 
     delete msg;
@@ -388,7 +391,7 @@ CRClient::HandleWhisperMessage(Msg *msg)
     debug_log("handle whisper message from: " << from
             << ", words: " << words);
 
-    ss << " whisper from " << from
+    ss << "recv whisper fr " << from
         << ": " << words;
 
     mLayout.DisplaySystemMessage(ss.str());
@@ -455,4 +458,26 @@ CRClient::ShowHelpInfo()
     mLayout.DisplaySystemMessage(" /l [room,user] list room or user info");
 }
 
+void
+CRClient::HandleLocalWhisperMsg(Msg *msg)
+{
+    std::string to;
+    std::string words;
+    (*msg) >> to;
+    (*msg) >> words;
+
+    /* local show send info */
+    std::stringstream ss;
+    ss << "send whisper to " << to
+        << ": " << words;
+    mLayout.DisplaySystemMessage(ss.str());
+
+    /* send to remote */
+    Msg *send = new Msg;
+    (*send) << MsgType::c2s_whisper_msg;
+    (*send) << to;
+    (*send) << words;
+    send->SetLen();
+    SendMessage(send);
+}
 

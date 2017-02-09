@@ -307,12 +307,12 @@ InputParser::ParseWhisper(char *input, Cmd *cmd)
 
         parsed = true;
         Msg *msg = new Msg;
-        (*msg) << MsgType::c2s_whisper_msg;
+        (*msg) << MsgType::local_whisper_msg;
         (*msg) << target;
         (*msg) << words;
         msg->SetLen();
 
-        cmd->SetLocalCmd(false);
+        cmd->SetLocalCmd(true);
         cmd->SetInvalid(false);
         cmd->SetMsg(msg);
 
