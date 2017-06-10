@@ -7,6 +7,10 @@
 #include "TcpSocket.hpp"
 #include "Msg.hpp"
 
+/* note: fd is not stored in RWConnection cause we think
+ * that read fd and write fd may not be the same
+ */
+
 class RWConnection {
 public:
     RWConnection(Driver * driver):mDriver(driver)
@@ -46,7 +50,7 @@ public:
         return 0;
     }
 
-    /* unregist read event */
+    /* unregist write event */
     int UnRegistWriteEvent(int fd)
     {
         assert(0 == mDriver->UnRegistWriteEvent(fd, this));
@@ -61,9 +65,7 @@ public:
         return 0;
     }
 
-    /* unregist write event */
-
-    /* try to send len bytes */
+    /* try write data to fd */
     virtual int WriteData(int fd) = 0;
     /* try read data from fd */
     virtual int ReadData(int fd) = 0;
